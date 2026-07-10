@@ -165,10 +165,83 @@
     .panel::after { display: none; }
 
     .top-row {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
       align-items: center;
       gap: 8px;
+    }
+
+    .top-left { min-width: 0; }
+
+    .top-center {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .last-hit {
+      width: 100%;
+      max-width: 220px;
+      min-height: 44px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(8, 4, 2, 0.85);
+      border: 1px solid rgba(232, 197, 71, 0.28);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      text-align: center;
+    }
+
+    .last-hit .lh-score {
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold-bright);
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .last-hit .lh-score.miss { color: #c07060; }
+    .last-hit .lh-score.bull { color: #fff; text-shadow: 0 0 10px rgba(232, 197, 71, 0.8); }
+    .last-hit .lh-score.idle { color: rgba(243, 230, 208, 0.35); font-weight: 700; letter-spacing: 0.1em; }
+
+    .last-hit .lh-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .last-hit .lh-mult {
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: var(--fire-soft);
+    }
+
+    .last-hit .lh-win {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #6dca8a;
+    }
+
+    .last-hit .lh-win.loss { color: #c07060; }
+
+    .last-hit.pop {
+      animation: stripPop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes stripPop {
+      from { opacity: 0.4; transform: scale(0.94); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .label {
@@ -244,95 +317,32 @@
       transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .result-strip {
+    .bull-banner {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 6px;
       flex: 0 0 auto;
-      min-height: 34px;
-      padding: 6px 16px;
+      padding: 5px 12px;
       border-radius: 999px;
-      background: rgba(8, 4, 2, 0.92);
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.2), rgba(255, 107, 44, 0.12));
       border: 1px solid rgba(232, 197, 71, 0.4);
-      box-shadow: 0 0 14px rgba(232, 197, 71, 0.12), inset 0 0 20px rgba(0, 0, 0, 0.35);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       color: var(--gold-bright);
       text-transform: uppercase;
-      overflow: hidden;
-      white-space: nowrap;
+      animation: odinPulse 2s ease-in-out infinite;
     }
 
-    .result-strip .strip-idle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .result-strip .strip-idle strong {
+    .bull-banner strong {
       color: #fff;
       text-shadow: 0 0 10px rgba(232, 197, 71, 0.8);
     }
 
-    .result-strip .strip-result {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      animation: stripPop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .result-strip.has-result .strip-idle { display: none; }
-    .result-strip.has-result .strip-result { display: flex; }
-
-    .result-strip .rs-score {
-      color: var(--gold-bright);
-      font-weight: 900;
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-    }
-
-    .result-strip .rs-score.miss { color: #c07060; }
-    .result-strip .rs-score.bull { color: #fff; text-shadow: 0 0 12px rgba(232, 197, 71, 0.9); }
-
-    .result-strip .rs-mult {
-      color: var(--fire-soft);
-      font-weight: 900;
-      font-size: 0.9rem;
-    }
-
-    .result-strip .rs-win {
-      color: #6dca8a;
-      font-weight: 800;
-      font-size: 0.82rem;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .result-strip .rs-win.loss { color: #c07060; }
-
-    .result-strip .rs-sep {
-      width: 1px;
-      height: 14px;
-      background: rgba(232, 197, 71, 0.35);
-      flex: 0 0 auto;
-    }
-
-    @keyframes stripPop {
-      from { opacity: 0; transform: scale(0.92); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
     @keyframes odinPulse {
-      0%, 100% { box-shadow: 0 0 8px rgba(232, 197, 71, 0.12); }
-      50% { box-shadow: 0 0 18px rgba(232, 197, 71, 0.28); }
-    }
-
-    .result-strip:not(.has-result) {
-      animation: odinPulse 2s ease-in-out infinite;
-      background: linear-gradient(135deg, rgba(20, 10, 5, 0.95), rgba(8, 4, 2, 0.98));
+      0%, 100% { box-shadow: 0 0 8px rgba(232, 197, 71, 0.2); }
+      50% { box-shadow: 0 0 20px rgba(232, 197, 71, 0.45); }
     }
 
     /* Board fills leftover viewport height — no page scroll */
@@ -777,9 +787,18 @@
 
     <div class="panel">
       <div class="top-row">
-        <div>
+        <div class="top-left">
           <div class="label">Balance</div>
           <div class="balance-value" id="balanceDisplay">$1,000.00</div>
+        </div>
+        <div class="top-center">
+          <div class="last-hit" id="lastHit">
+            <div class="lh-score idle" id="lhScore">Ready</div>
+            <div class="lh-row">
+              <span class="lh-mult" id="lhMult">—</span>
+              <span class="lh-win" id="lhWin"></span>
+            </div>
+          </div>
         </div>
         <div class="venue-block">
           <div class="label">Pub</div>
@@ -801,17 +820,8 @@
       </div>
     </div>
 
-    <div class="result-strip" id="resultStrip">
-      <div class="strip-idle" id="stripIdle">
-        ✦ Bull's Eye · <strong id="bullLabel">20</strong>
-      </div>
-      <div class="strip-result" id="stripResult">
-        <span class="rs-score" id="rsScore">TRIPLE 20</span>
-        <span class="rs-sep" aria-hidden="true"></span>
-        <span class="rs-mult" id="rsMult">5.88×</span>
-        <span class="rs-sep" aria-hidden="true"></span>
-        <span class="rs-win" id="rsWin">+ $58.80</span>
-      </div>
+    <div class="bull-banner" id="bullBanner">
+      ✦ Bull's Eye · <strong id="bullLabel">20</strong>
     </div>
 
     <div class="board-slot">
@@ -955,10 +965,10 @@
       const seasonFill = document.getElementById("seasonFill");
       const seasonPct = document.getElementById("seasonPct");
       const bullLabel = document.getElementById("bullLabel");
-      const resultStrip = document.getElementById("resultStrip");
-      const rsScore = document.getElementById("rsScore");
-      const rsMult = document.getElementById("rsMult");
-      const rsWin = document.getElementById("rsWin");
+      const lastHit = document.getElementById("lastHit");
+      const lhScore = document.getElementById("lhScore");
+      const lhMult = document.getElementById("lhMult");
+      const lhWin = document.getElementById("lhWin");
       const betInput = document.getElementById("betInput");
       const btnThrow = document.getElementById("btnThrow");
       const historyEl = document.getElementById("history");
@@ -1466,34 +1476,27 @@
       }
 
       function showResult(hit, mult, win, bullsEye) {
-        rsScore.textContent = hit.label;
-        rsScore.className = "rs-score";
-        if (hit.isMiss) rsScore.classList.add("miss");
-        if (bullsEye) rsScore.classList.add("bull");
+        lhScore.textContent = hit.label;
+        lhScore.className = "lh-score";
+        if (hit.isMiss) lhScore.classList.add("miss");
+        if (bullsEye) lhScore.classList.add("bull");
 
-        rsMult.textContent = mult.toFixed(2) + "×";
+        lhMult.textContent = mult.toFixed(2) + "×";
 
         if (hit.isMiss) {
-          rsWin.textContent = "BET LOST";
-          rsWin.className = "rs-win loss";
+          lhWin.textContent = "BET LOST";
+          lhWin.className = "lh-win loss";
         } else if (win > 0) {
-          rsWin.textContent = "+ " + formatMoney(win);
-          rsWin.className = "rs-win";
+          lhWin.textContent = "+ " + formatMoney(win);
+          lhWin.className = "lh-win";
         } else {
-          rsWin.textContent = "— " + formatMoney(state.bet);
-          rsWin.className = "rs-win loss";
+          lhWin.textContent = "— " + formatMoney(state.bet);
+          lhWin.className = "lh-win loss";
         }
 
-        // Show score / multiplier / win in the middle strip
-        resultStrip.classList.remove("has-result");
-        void resultStrip.offsetWidth;
-        resultStrip.classList.add("has-result");
-
-        clearTimeout(state.overlayTimer);
-        // Hold result until next throw (or auto-clear after a few seconds)
-        state.overlayTimer = setTimeout(() => {
-          resultStrip.classList.remove("has-result");
-        }, 3200);
+        lastHit.classList.remove("pop");
+        void lastHit.offsetWidth;
+        lastHit.classList.add("pop");
       }
 
       function advanceSeason() {
@@ -1514,8 +1517,6 @@
         }
 
         playThrowSound();
-        resultStrip.classList.remove("has-result");
-        clearTimeout(state.overlayTimer);
 
         const target = randomThrowPoint();
         const hit = resolveHit(target.x, target.y);
