@@ -210,8 +210,14 @@
     }
 
     .last-hit .lh-score.miss { color: #c07060; }
+    .last-hit .lh-score.blackwedge { color: #ff4444; animation: blackFlash 0.5s ease; }
     .last-hit .lh-score.bull { color: #fff; text-shadow: 0 0 10px rgba(232, 197, 71, 0.8); }
     .last-hit .lh-score.idle { color: rgba(243, 230, 208, 0.35); font-weight: 700; letter-spacing: 0.1em; }
+
+    @keyframes blackFlash {
+      0%, 100% { color: #ff4444; }
+      50% { color: #ff8888; text-shadow: 0 0 12px rgba(255, 40, 40, 0.8); }
+    }
 
     .last-hit .lh-row {
       display: flex;
@@ -823,24 +829,32 @@
 
   <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <div class="modal">
-      <h2 id="helpTitle">How to Play</h2>
+      <h2 id="helpTitle">🍺 How to Lose (and Win) in Drunken Darts</h2>
       <p class="sub">Drunken Darts · 97% RTP</p>
       <ul>
         <li>
+          <strong>Miss the Board (1% chance)</strong>
+          Your dart flies off – bet lost.
+        </li>
+        <li>
+          <strong>Black Wedge Curse</strong>
+          If your dart lands on a BLACK single segment, you lose your bet instantly.
+        </li>
+        <li>
+          <strong>Low White Singles (1–9)</strong>
+          You win less than your bet – the house takes a small cut.
+        </li>
+        <li>
+          <strong>High White Singles (10–20), Doubles, Triples, Bullseye</strong>
+          You win big multipliers (score × 0.109).
+        </li>
+        <li>
+          <strong>Fair RTP</strong>
+          Over time, the game pays back 97% of all bets – a slight 3% house edge keeps the tavern running!
+        </li>
+        <li>
           <strong>Throw</strong>
           Press THROW or Spacebar. You don't aim — the dart lands at random.
-        </li>
-        <li>
-          <strong>Scoring</strong>
-          Multiplier = Score × house factor (e.g. Triple 20 = 60 → ~4.29×). Target RTP 97%.
-        </li>
-        <li>
-          <strong>Shaky aim</strong>
-          Since this is Drunken Darts, your aim is shaky—there's a small chance your dart will miss the board entirely, and you'll lose your bet!
-        </li>
-        <li>
-          <strong>Miss</strong>
-          1.02% chance per throw — bet lost, 0.00× multiplier.
         </li>
         <li>
           <strong>Bull's Eye</strong>
@@ -891,12 +905,13 @@
         innerBull: 15 / 210     // inner bull (50 pts)
       };
 
-      // Logical miss applied after scoring — independent of board geometry
-      const MISS_PROBABILITY = 0.0102; // 97% RTP target
-      // Uniform-area throws on a standard board average ~13.7 pts (not ~10).
-      // Calibrate factor so avg multiplier ≈ 0.97 with logical miss applied.
-      const UNIFORM_DISK_AVG_SCORE = 13.714;
-      const RTP_FACTOR = 0.97 / (UNIFORM_DISK_AVG_SCORE * (1 - MISS_PROBABILITY));
+      // Black single wedges (large single area only — doubles/triples score normally)
+      const BLACK_SINGLES = [20, 18, 13, 10, 2, 3, 7, 8, 14, 12];
+
+      // RTP math: black-single loss lowers on-board avg score to ~9.0.
+      // After 1% miss → effective avg ≈ 8.91.  8.91 × 0.109 = 0.971 → ~97% RTP.
+      const MISS_RATE = 0.01;
+      const BASE_MULTIPLIER = 0.109;
 
       const MIN_BET = 0.01;
       const MAX_BET = 100;
@@ -943,7 +958,8 @@
         glowPhase: 0,
         particles: [],
         dart: null,
-        overlayTimer: null
+        overlayTimer: null,
+        segmentFlash: null
       };
 
       function boardGeom() {
@@ -961,7 +977,21 @@
           number: 0,
           ring: "miss",
           isBull: false,
-          isMiss: true
+          isMiss: true,
+          isBlackWedge: false
+        };
+      }
+
+      function makeBlackWedgeHit(num) {
+        return {
+          score: 0,
+          label: "💀 BLACK WEDGE – BET LOST",
+          short: "BLK",
+          number: num,
+          ring: "blackSingle",
+          isBull: false,
+          isMiss: false,
+          isBlackWedge: true
         };
       }
 
@@ -976,12 +1006,23 @@
         };
       }
 
-      /** Apply house-edge miss after geometric score is known. */
+      /** Miss animation — dart flies off the board. */
+      function randomMissPoint() {
+        const { cx, cy, boardR } = boardGeom();
+        const angle = Math.random() * Math.PI * 2;
+        const dist = boardR * (1.14 + Math.random() * 0.45);
+        return {
+          x: cx + Math.cos(angle) * dist,
+          y: cy + Math.sin(angle) * dist
+        };
+      }
+
+      /** Miss roll first, then black-wedge check on geometric hit. */
       function resolveThrowOutcome(x, y) {
-        const hit = resolveHit(x, y);
-        if (Math.random() < MISS_PROBABILITY) {
+        if (Math.random() < MISS_RATE) {
           return { hit: makeMissHit(), bullsEye: false, forcedMiss: true };
         }
+        const hit = resolveHit(x, y);
         return { hit, bullsEye: isBullsEyeHit(hit), forcedMiss: false };
       }
 
@@ -1059,10 +1100,10 @@
         const n = p.norm;
 
         if (n <= R.innerBull) {
-          return { score: 50, label: "INNER BULL", short: "BULL", number: 0, ring: "innerBull", isBull: true, isMiss: false };
+          return { score: 50, label: "INNER BULL", short: "BULL", number: 0, ring: "innerBull", isBull: true, isMiss: false, isBlackWedge: false };
         }
         if (n <= R.outerBull) {
-          return { score: 25, label: "OUTER BULL", short: "25", number: 0, ring: "outerBull", isBull: true, isMiss: false };
+          return { score: 25, label: "OUTER BULL", short: "25", number: 0, ring: "outerBull", isBull: true, isMiss: false, isBlackWedge: false };
         }
 
         const num = numberFromAngle(p.angle);
@@ -1081,13 +1122,15 @@
           score = num * 2;
           label = "DOUBLE " + num;
           short = "D" + num;
+        } else if (BLACK_SINGLES.includes(num)) {
+          return makeBlackWedgeHit(num);
         }
 
-        return { score, label, short, number: num, ring, isBull: false, isMiss: false };
+        return { score, label, short, number: num, ring, isBull: false, isMiss: false, isBlackWedge: false };
       }
 
       function isBullsEyeHit(hit) {
-        if (hit.isMiss) return false;
+        if (hit.isMiss || hit.isBlackWedge) return false;
         if (state.bullTarget === 0) return hit.isBull;
         return hit.number === state.bullTarget;
       }
@@ -1223,6 +1266,7 @@
         }
 
         drawBullsEye(cx, cy, boardR, topOffset, seg);
+        drawSegmentFlash(cx, cy, boardR, topOffset, seg);
 
         // Particles
         for (let i = state.particles.length - 1; i >= 0; i--) {
@@ -1321,6 +1365,26 @@
           ctx.fillText("★", cx + Math.cos(aCenter) * midR, cy + Math.sin(aCenter) * midR);
         }
 
+        ctx.restore();
+      }
+
+      /** Red flash on black-wedge segment when cursed. */
+      function drawSegmentFlash(cx, cy, boardR, topOffset, seg) {
+        const flash = state.segmentFlash;
+        if (!flash || performance.now() > flash.until) return;
+        const idx = BOARD_ORDER.indexOf(flash.number);
+        if (idx < 0) return;
+
+        const aCenter = topOffset + idx * seg;
+        const a0 = aCenter - seg / 2;
+        const a1 = aCenter + seg / 2;
+        const pulse = 0.5 + 0.5 * Math.sin(state.glowPhase * 4);
+
+        ctx.save();
+        ctx.globalAlpha = 0.35 + pulse * 0.35;
+        ctx.fillStyle = "#ff2222";
+        drawSegment(cx, cy, boardR * R.tripleOuter, boardR * R.doubleInner, a0, a1, "#ff2222");
+        drawSegment(cx, cy, boardR * R.outerBull, boardR * R.tripleInner, a0, a1, "#ff2222");
         ctx.restore();
       }
 
@@ -1467,7 +1531,7 @@
         state.history.forEach((h) => {
           const chip = document.createElement("div");
           chip.className = "chip";
-          if (h.short === "MISS" || h.mult < 0.5) chip.classList.add("low");
+          if (h.short === "MISS" || h.short === "BLK" || h.mult < 0.5) chip.classList.add("low");
           else if (h.mult >= 2.5) chip.classList.add("high");
           else if (h.mult >= 0.8) chip.classList.add("mid");
           else chip.classList.add("low");
@@ -1480,11 +1544,12 @@
         lhScore.textContent = hit.label;
         lhScore.className = "lh-score";
         if (hit.isMiss) lhScore.classList.add("miss");
+        if (hit.isBlackWedge) lhScore.classList.add("blackwedge");
         if (bullsEye) lhScore.classList.add("bull");
 
         lhMult.textContent = mult.toFixed(2) + "×";
 
-        if (hit.isMiss) {
+        if (hit.isMiss || hit.isBlackWedge) {
           lhWin.textContent = "BET LOST";
           lhWin.className = "lh-win loss";
         } else if (win > 0) {
@@ -1518,8 +1583,9 @@
 
         playThrowSound();
 
-        const target = randomThrowPoint();
-        const outcome = resolveThrowOutcome(target.x, target.y);
+        const boardPoint = randomThrowPoint();
+        const outcome = resolveThrowOutcome(boardPoint.x, boardPoint.y);
+        const target = outcome.forcedMiss ? randomMissPoint() : boardPoint;
         const hit = outcome.hit;
         const bullsEye = outcome.bullsEye;
 
@@ -1554,16 +1620,20 @@
               embedded: true,
               aimAngle: aimAngle + 0.18 // slight stuck angle
             };
-            spawnImpact(target.x, target.y, bullsEye || outcome.forcedMiss);
-            resolveThrow(hit, bullsEye);
+            spawnImpact(target.x, target.y, bullsEye || outcome.forcedMiss || hit.isBlackWedge);
+            resolveThrow(hit, bullsEye, outcome.forcedMiss);
           }
         }
         requestAnimationFrame(frame);
       }
 
-      function resolveThrow(hit, bullsEye) {
-        let mult = hit.isMiss ? 0 : hit.score * RTP_FACTOR;
-        if (bullsEye && !hit.isMiss && hit.score > 0) {
+      function resolveThrow(hit, bullsEye, forcedMiss) {
+        if (hit.isBlackWedge) {
+          state.segmentFlash = { number: hit.number, until: performance.now() + 700 };
+        }
+
+        let mult = (hit.isMiss || hit.isBlackWedge) ? 0 : hit.score * BASE_MULTIPLIER;
+        if (bullsEye && !hit.isMiss && !hit.isBlackWedge && hit.score > 0) {
           mult *= 2;
           showToast("✦ Bull's Eye! Payout doubled");
         }
@@ -1577,7 +1647,10 @@
 
         addHistory(hit.short, mult);
         advanceSeason();
-        showResult(hit, mult, win, bullsEye && !hit.isMiss);
+        showResult(hit, mult, win, bullsEye && !hit.isMiss && !hit.isBlackWedge);
+
+        if (forcedMiss) showToast("Dart flew off the board!");
+        else if (hit.isBlackWedge) showToast("💀 Black wedge curse!");
 
         if (bullsEye || Math.random() < 0.25) {
           pickBullsEye();
