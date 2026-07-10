@@ -832,11 +832,15 @@
         </li>
         <li>
           <strong>Scoring</strong>
-          Multiplier = Score × 0.098 (e.g. Triple 20 = 60 → 5.88×).
+          Multiplier = Score × house factor (e.g. Triple 20 = 60 → ~4.29×). Target RTP 97%.
+        </li>
+        <li>
+          <strong>Shaky aim</strong>
+          Since this is Drunken Darts, your aim is shaky—there's a small chance your dart will miss the board entirely, and you'll lose your bet!
         </li>
         <li>
           <strong>Miss</strong>
-          1.02% chance the dart misses the board — bet lost, 0.00×.
+          1.02% chance per throw — bet lost, 0.00× multiplier.
         </li>
         <li>
           <strong>Bull's Eye</strong>
@@ -877,23 +881,25 @@
       // Classic dartboard order (20 at top, clockwise)
       const BOARD_ORDER = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
 
-      // Radii as fractions of double-outer (board) radius
+      // Scoring radii as fractions of double-outer radius (210px reference board)
       const R = {
-        doubleOuter: 1.0,
-        doubleInner: 0.93,
-        tripleOuter: 0.62,
-        tripleInner: 0.55,
-        outerBull: 0.12,
-        innerBull: 0.055
+        doubleOuter: 1.0,       // 210px
+        doubleInner: 190 / 210, // double ring inner wire
+        tripleOuter: 110 / 210, // triple ring outer wire
+        tripleInner: 100 / 210, // triple ring inner wire
+        outerBull: 30 / 210,    // outer bull (25 pts)
+        innerBull: 15 / 210     // inner bull (50 pts)
       };
 
-      // Miss area: P(miss) = 1 - (boardR / missR)^2 = 0.0102 → missR/boardR = 1/sqrt(0.9898)
-      const MISS_RATE = 0.0102;
-      const MISS_RADIUS_FACTOR = 1 / Math.sqrt(1 - MISS_RATE); // ≈ 1.00514
+      // Logical miss applied after scoring — independent of board geometry
+      const MISS_PROBABILITY = 0.0102; // 97% RTP target
+      // Uniform-area throws on a standard board average ~13.7 pts (not ~10).
+      // Calibrate factor so avg multiplier ≈ 0.97 with logical miss applied.
+      const UNIFORM_DISK_AVG_SCORE = 13.714;
+      const RTP_FACTOR = 0.97 / (UNIFORM_DISK_AVG_SCORE * (1 - MISS_PROBABILITY));
 
       const MIN_BET = 0.01;
       const MAX_BET = 100;
-      const RTP_FACTOR = 0.098;
       const SEASON_STEP = 1.2;
       const FLIGHT_MS = 920;
       const OVERLAY_MS = 1900;
@@ -944,8 +950,39 @@
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
         const boardR = canvas.width * 0.42;
-        const missR = boardR * MISS_RADIUS_FACTOR;
-        return { cx, cy, boardR, missR };
+        return { cx, cy, boardR };
+      }
+
+      function makeMissHit() {
+        return {
+          score: 0,
+          label: "MISS – BET LOST",
+          short: "MISS",
+          number: 0,
+          ring: "miss",
+          isBull: false,
+          isMiss: true
+        };
+      }
+
+      /** Uniform random point inside the scoring face (double ring). */
+      function randomThrowPoint() {
+        const { cx, cy, boardR } = boardGeom();
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.sqrt(Math.random()) * boardR;
+        return {
+          x: cx + Math.cos(angle) * radius,
+          y: cy + Math.sin(angle) * radius
+        };
+      }
+
+      /** Apply house-edge miss after geometric score is known. */
+      function resolveThrowOutcome(x, y) {
+        const hit = resolveHit(x, y);
+        if (Math.random() < MISS_PROBABILITY) {
+          return { hit: makeMissHit(), bullsEye: false, forcedMiss: true };
+        }
+        return { hit, bullsEye: isBullsEyeHit(hit), forcedMiss: false };
       }
 
       function formatMoney(n) {
@@ -1021,10 +1058,6 @@
         const p = toPolar(x, y);
         const n = p.norm;
 
-        if (n > R.doubleOuter) {
-          return { score: 0, label: "MISS – BET LOST", short: "MISS", number: 0, ring: "miss", isBull: false, isMiss: true };
-        }
-
         if (n <= R.innerBull) {
           return { score: 50, label: "INNER BULL", short: "BULL", number: 0, ring: "innerBull", isBull: true, isMiss: false };
         }
@@ -1053,17 +1086,6 @@
         return { score, label, short, number: num, ring, isBull: false, isMiss: false };
       }
 
-      /** Uniform random point inside miss circle (board + thin miss ring). */
-      function randomThrowPoint() {
-        const { cx, cy, missR } = boardGeom();
-        const angle = Math.random() * Math.PI * 2;
-        const r = Math.sqrt(Math.random()) * missR;
-        return {
-          x: cx + Math.cos(angle) * r,
-          y: cy + Math.sin(angle) * r
-        };
-      }
-
       function isBullsEyeHit(hit) {
         if (hit.isMiss) return false;
         if (state.bullTarget === 0) return hit.isBull;
@@ -1080,7 +1102,7 @@
       }
 
       function drawBoard() {
-        const { cx, cy, boardR, missR } = boardGeom();
+        const { cx, cy, boardR } = boardGeom();
         const w = canvas.width;
         const h = canvas.height;
 
@@ -1093,9 +1115,9 @@
         ctx.fillStyle = surround;
         ctx.fillRect(0, 0, w, h);
 
-        // Subtle miss ring (cork surround just outside double)
+        // Cork surround (visual only)
         ctx.beginPath();
-        ctx.arc(cx, cy, missR, 0, Math.PI * 2);
+        ctx.arc(cx, cy, boardR * 1.02, 0, Math.PI * 2);
         ctx.arc(cx, cy, boardR, 0, Math.PI * 2, true);
         ctx.fillStyle = "rgba(40, 24, 16, 0.55)";
         ctx.fill();
@@ -1497,8 +1519,9 @@
         playThrowSound();
 
         const target = randomThrowPoint();
-        const hit = resolveHit(target.x, target.y);
-        const bullsEye = isBullsEyeHit(hit);
+        const outcome = resolveThrowOutcome(target.x, target.y);
+        const hit = outcome.hit;
+        const bullsEye = outcome.bullsEye;
 
         state.balance = Math.round((state.balance - state.bet) * 100) / 100;
         pulseBalance();
@@ -1531,7 +1554,7 @@
               embedded: true,
               aimAngle: aimAngle + 0.18 // slight stuck angle
             };
-            spawnImpact(target.x, target.y, bullsEye || hit.isMiss);
+            spawnImpact(target.x, target.y, bullsEye || outcome.forcedMiss);
             resolveThrow(hit, bullsEye);
           }
         }
