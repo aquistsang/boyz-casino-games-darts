@@ -1211,14 +1211,30 @@
         ctx.fillStyle = "#b8322a";
         ctx.fill();
 
+        // Numbers on the silver/grey outer ring (between double wire and outer metal)
+        const numRingInner = boardR * 1.025;
+        const numRingOuter = boardR * 1.075;
+        const numRadius = (numRingInner + numRingOuter) / 2;
+        const fontSize = Math.max(10, Math.round((numRingOuter - numRingInner) * 0.82));
+
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.font = "bold 16px Segoe UI, sans-serif";
+        ctx.font = `900 ${fontSize}px "Segoe UI", system-ui, sans-serif`;
+        ctx.lineJoin = "round";
+
         for (let i = 0; i < 20; i++) {
           const a = topOffset + i * seg;
-          const nr = boardR * 1.055;
-          ctx.fillStyle = "#e8c547";
-          ctx.fillText(String(BOARD_ORDER[i]), cx + Math.cos(a) * nr, cy + Math.sin(a) * nr);
+          const nx = cx + Math.cos(a) * numRadius;
+          const ny = cy + Math.sin(a) * numRadius;
+          const label = String(BOARD_ORDER[i]);
+
+          // Dark outline keeps digits readable on silver without spilling inward
+          ctx.lineWidth = Math.max(2, fontSize * 0.2);
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.9)";
+          ctx.strokeText(label, nx, ny);
+
+          ctx.fillStyle = "#fffef8";
+          ctx.fillText(label, nx, ny);
         }
 
         drawBullsEye(cx, cy, boardR, topOffset, seg);
