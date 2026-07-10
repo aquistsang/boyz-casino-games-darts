@@ -1151,17 +1151,24 @@
         ctx.fillStyle = "rgba(40, 24, 16, 0.55)";
         ctx.fill();
 
+        // Outer metal rim + thick silver number ring
+        const NUM_RING_INNER = 1.02;
+        const NUM_RING_OUTER = 1.13;
+        const OUTER_METAL = 1.17;
+
         ctx.beginPath();
-        ctx.arc(cx, cy, boardR * 1.08, 0, Math.PI * 2);
+        ctx.arc(cx, cy, boardR * OUTER_METAL, 0, Math.PI * 2);
         ctx.fillStyle = "#8a8a8a";
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(cx, cy, boardR * 1.02, 0, Math.PI * 2);
-        ctx.fillStyle = "#c0c0c0";
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(cx, cy, boardR * 1.02, 0, Math.PI * 2);
+        ctx.arc(cx, cy, boardR * NUM_RING_OUTER, 0, Math.PI * 2);
+        ctx.arc(cx, cy, boardR * NUM_RING_INNER, 0, Math.PI * 2, true);
+        ctx.fillStyle = "#d4d4d4";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, boardR * NUM_RING_INNER, 0, Math.PI * 2);
         ctx.arc(cx, cy, boardR, 0, Math.PI * 2, true);
         ctx.fillStyle = "#1a120c";
         ctx.fill();
@@ -1211,11 +1218,11 @@
         ctx.fillStyle = "#b8322a";
         ctx.fill();
 
-        // Numbers on the silver/grey outer ring (between double wire and outer metal)
-        const numRingInner = boardR * 1.025;
-        const numRingOuter = boardR * 1.075;
+        // Numbers on the silver/grey outer ring
+        const numRingInner = boardR * NUM_RING_INNER;
+        const numRingOuter = boardR * NUM_RING_OUTER;
         const numRadius = (numRingInner + numRingOuter) / 2;
-        const fontSize = Math.max(10, Math.round((numRingOuter - numRingInner) * 0.82));
+        const fontSize = Math.max(13, Math.round((numRingOuter - numRingInner) * 0.92));
 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -1228,12 +1235,11 @@
           const ny = cy + Math.sin(a) * numRadius;
           const label = String(BOARD_ORDER[i]);
 
-          // Dark outline keeps digits readable on silver without spilling inward
-          ctx.lineWidth = Math.max(2, fontSize * 0.2);
-          ctx.strokeStyle = "rgba(0, 0, 0, 0.9)";
+          ctx.lineWidth = Math.max(2.5, fontSize * 0.18);
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.85)";
           ctx.strokeText(label, nx, ny);
 
-          ctx.fillStyle = "#fffef8";
+          ctx.fillStyle = "#e8c547";
           ctx.fillText(label, nx, ny);
         }
 
