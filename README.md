@@ -1,5 +1,9 @@
-# Boyz Casino Games — Darts
+# Boyz Casino Games — Drunken Darts
 
-**The Drunken Duck** — Viking tavern darts with a classic bristle board, chance-based throws, Odin's Eye bonus, and a designed **98% RTP** (`Multiplier = Score × 0.098`).
+**Drunken Darts** — Viking tavern chance-based darts with a classic bristle board, Bull's Eye bonus, and designed **97% RTP**.
+
+- Multiplier = Score × 0.098  
+- 1.02% miss rate (off the double ring)  
+- Bull's Eye doubles payout on the glowing segment  
 
 Open `index.html` locally or visit the Vercel deployment.
