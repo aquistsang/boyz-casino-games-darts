@@ -166,9 +166,9 @@
 
     .top-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .top-left { min-width: 0; }
@@ -261,33 +261,6 @@
     }
 
     .balance-value.pulse { transform: scale(1.08); color: var(--gold-bright); }
-
-    .venue-block { text-align: right; }
-    .venue-name { font-size: 0.82rem; font-weight: 700; color: var(--cream); line-height: 1.2; }
-
-    .player-toggle {
-      display: inline-flex;
-      margin-top: 4px;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid rgba(232, 197, 71, 0.3);
-    }
-
-    .player-toggle button {
-      padding: 3px 8px;
-      font-size: 0.6rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      background: rgba(0, 0, 0, 0.35);
-      color: rgba(243, 230, 208, 0.55);
-      border: none;
-    }
-
-    .player-toggle button.active {
-      background: linear-gradient(135deg, rgba(232, 197, 71, 0.45), rgba(255, 107, 44, 0.3));
-      color: var(--gold-bright);
-    }
 
     .season-wrap { margin-top: 6px; }
     .season-label {
@@ -757,7 +730,6 @@
     @media (max-height: 700px) {
       .brand-eyebrow { display: none; }
       .hint { display: none; }
-      .player-toggle button { padding: 2px 7px; }
       .panel { padding: 6px 8px; }
       .wrap { gap: 4px; padding: 2px 8px 6px; }
     }
@@ -798,14 +770,6 @@
               <span class="lh-mult" id="lhMult">—</span>
               <span class="lh-win" id="lhWin"></span>
             </div>
-          </div>
-        </div>
-        <div class="venue-block">
-          <div class="label">Pub</div>
-          <div class="venue-name" id="venueName">The Drunken Duck</div>
-          <div class="player-toggle" role="group" aria-label="Player">
-            <button type="button" class="active" data-player="1">Player 1</button>
-            <button type="button" data-player="2">Player 2</button>
           </div>
         </div>
       </div>
@@ -880,7 +844,7 @@
         </li>
         <li>
           <strong>Season</strong>
-          Each throw fills the Season bar. At 100%, a new pub opens.
+          Each throw fills the Season bar. At 100%, a new Bull's Eye target is set.
         </li>
       </ul>
       <button type="button" class="btn-modal" id="btnCloseHelp">Got it — Throw!</button>
@@ -927,17 +891,6 @@
       const MISS_RATE = 0.0102;
       const MISS_RADIUS_FACTOR = 1 / Math.sqrt(1 - MISS_RATE); // ≈ 1.00514
 
-      const VENUES = [
-        "The Drunken Duck",
-        "The Red Lion",
-        "The Crown & Anchor",
-        "The Queen's Arms",
-        "The Three Feathers",
-        "The Old Oak",
-        "The Bull & Gate",
-        "The White Hart"
-      ];
-
       const MIN_BET = 0.01;
       const MAX_BET = 100;
       const RTP_FACTOR = 0.098;
@@ -961,7 +914,6 @@
       const canvas = document.getElementById("dartboard");
       const ctx = canvas.getContext("2d");
       const balanceDisplay = document.getElementById("balanceDisplay");
-      const venueName = document.getElementById("venueName");
       const seasonFill = document.getElementById("seasonFill");
       const seasonPct = document.getElementById("seasonPct");
       const bullLabel = document.getElementById("bullLabel");
@@ -979,9 +931,7 @@
         balance: 1000,
         bet: 1,
         progress: 0,
-        venueIndex: 0,
-        bullTarget: 20, // 0 = bullseye, else 1–20
-        player: 1,
+        bullTarget: 20,
         history: [],
         isFlying: false,
         glowPhase: 0,
@@ -1039,7 +989,6 @@
 
       function updateUI() {
         balanceDisplay.textContent = formatMoney(state.balance);
-        venueName.textContent = VENUES[state.venueIndex];
         const pct = Math.min(100, state.progress);
         seasonFill.style.width = pct + "%";
         seasonPct.textContent = pct.toFixed(1) + "%";
@@ -1151,26 +1100,32 @@
         ctx.fillStyle = "rgba(40, 24, 16, 0.55)";
         ctx.fill();
 
-        // Outer metal rim + thick silver number ring
-        const NUM_RING_INNER = 1.02;
-        const NUM_RING_OUTER = 1.13;
-        const OUTER_METAL = 1.17;
+        // Professional board colours (Samurai-style)
+        const COL = {
+          black: "#0a0a0a",
+          cream: "#f0e8dc",
+          red: "#d61f26",
+          green: "#1a9a4a",
+          wire: "#0a0a0a",
+          numRing: "#0a0a0a",
+          outerRim: "#1a1a1a"
+        };
 
+        const NUM_RING_INNER = 1.0;
+        const NUM_RING_OUTER = 1.14;
+        const OUTER_RIM = 1.17;
+
+        // Outer rim
         ctx.beginPath();
-        ctx.arc(cx, cy, boardR * OUTER_METAL, 0, Math.PI * 2);
-        ctx.fillStyle = "#8a8a8a";
+        ctx.arc(cx, cy, boardR * OUTER_RIM, 0, Math.PI * 2);
+        ctx.fillStyle = COL.outerRim;
         ctx.fill();
 
+        // Black number ring
         ctx.beginPath();
         ctx.arc(cx, cy, boardR * NUM_RING_OUTER, 0, Math.PI * 2);
         ctx.arc(cx, cy, boardR * NUM_RING_INNER, 0, Math.PI * 2, true);
-        ctx.fillStyle = "#d4d4d4";
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, boardR * NUM_RING_INNER, 0, Math.PI * 2);
-        ctx.arc(cx, cy, boardR, 0, Math.PI * 2, true);
-        ctx.fillStyle = "#1a120c";
+        ctx.fillStyle = COL.numRing;
         ctx.fill();
 
         const seg = Math.PI / 10;
@@ -1181,8 +1136,8 @@
           const a0 = aCenter - seg / 2;
           const a1 = aCenter + seg / 2;
           const dark = i % 2 === 0;
-          const singleColor = dark ? "#111111" : "#f5f0e6";
-          const multiColor = dark ? "#b8322a" : "#2e7d4f";
+          const singleColor = dark ? COL.black : COL.cream;
+          const multiColor = dark ? COL.red : COL.green;
 
           drawSegment(cx, cy, boardR * R.tripleOuter, boardR * R.doubleInner, a0, a1, singleColor);
           drawSegment(cx, cy, boardR * R.outerBull, boardR * R.tripleInner, a0, a1, singleColor);
@@ -1190,8 +1145,9 @@
           drawSegment(cx, cy, boardR * R.tripleInner, boardR * R.tripleOuter, a0, a1, multiColor);
         }
 
-        ctx.strokeStyle = "rgba(200, 200, 200, 0.85)";
-        ctx.lineWidth = 1.2;
+        // Spider wires (black)
+        ctx.strokeStyle = COL.wire;
+        ctx.lineWidth = 1.1;
         for (let i = 0; i < 20; i++) {
           const a = topOffset + i * seg - seg / 2;
           ctx.beginPath();
@@ -1201,33 +1157,35 @@
         }
 
         const rings = [R.doubleOuter, R.doubleInner, R.tripleOuter, R.tripleInner, R.outerBull, R.innerBull];
-        ctx.strokeStyle = "rgba(210, 210, 210, 0.9)";
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = COL.wire;
+        ctx.lineWidth = 1.2;
         rings.forEach((fr) => {
           ctx.beginPath();
           ctx.arc(cx, cy, boardR * fr, 0, Math.PI * 2);
           ctx.stroke();
         });
 
+        // Bull — outer green, inner red
         ctx.beginPath();
         ctx.arc(cx, cy, boardR * R.outerBull, 0, Math.PI * 2);
-        ctx.fillStyle = "#2e7d4f";
+        ctx.fillStyle = COL.green;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(cx, cy, boardR * R.innerBull, 0, Math.PI * 2);
-        ctx.fillStyle = "#b8322a";
+        ctx.fillStyle = COL.red;
         ctx.fill();
 
-        // Numbers on the silver/grey outer ring
+        // White radial numbers on black ring
         const numRingInner = boardR * NUM_RING_INNER;
         const numRingOuter = boardR * NUM_RING_OUTER;
         const numRadius = (numRingInner + numRingOuter) / 2;
-        const fontSize = Math.max(13, Math.round((numRingOuter - numRingInner) * 0.92));
+        const ringWidth = numRingOuter - numRingInner;
+        const fontSize = Math.max(14, Math.round(ringWidth * 0.65));
 
+        ctx.font = `900 ${fontSize}px "Segoe UI", system-ui, sans-serif`;
+        ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.font = `900 ${fontSize}px "Segoe UI", system-ui, sans-serif`;
-        ctx.lineJoin = "round";
 
         for (let i = 0; i < 20; i++) {
           const a = topOffset + i * seg;
@@ -1235,12 +1193,11 @@
           const ny = cy + Math.sin(a) * numRadius;
           const label = String(BOARD_ORDER[i]);
 
-          ctx.lineWidth = Math.max(2.5, fontSize * 0.18);
-          ctx.strokeStyle = "rgba(0, 0, 0, 0.85)";
-          ctx.strokeText(label, nx, ny);
-
-          ctx.fillStyle = "#e8c547";
-          ctx.fillText(label, nx, ny);
+          ctx.save();
+          ctx.translate(nx, ny);
+          ctx.rotate(a + Math.PI / 2);
+          ctx.fillText(label, 0, 0);
+          ctx.restore();
         }
 
         drawBullsEye(cx, cy, boardR, topOffset, seg);
@@ -1525,9 +1482,8 @@
         state.progress += SEASON_STEP;
         if (state.progress >= 100) {
           state.progress = 0;
-          state.venueIndex = (state.venueIndex + 1) % VENUES.length;
           pickBullsEye();
-          showToast("New pub: " + VENUES[state.venueIndex]);
+          showToast("Season complete — new Bull's Eye!");
         }
       }
 
@@ -1643,15 +1599,6 @@
       betInput.addEventListener("blur", () => {
         state.bet = clampBet(parseFloat(betInput.value));
         updateUI();
-      });
-
-      document.querySelectorAll("[data-player]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          state.player = parseInt(btn.dataset.player, 10);
-          document.querySelectorAll("[data-player]").forEach((b) => {
-            b.classList.toggle("active", b === btn);
-          });
-        });
       });
 
       document.getElementById("btnHelp").addEventListener("click", openHelp);
