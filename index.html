@@ -3,118 +3,161 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Bar Darts — Boyz Casino</title>
+  <title>The Drunken Duck — Viking Tavern Darts</title>
   <style>
     :root {
-      --bg: #1a0e0a;
-      --bg-deep: #0f0806;
-      --gold: #f5c842;
-      --gold-dim: #c9a030;
-      --red: #d94a3a;
-      --wood: #3d2418;
-      --wood-light: #5c3a28;
-      --cream: #f2e6d4;
-      --glass: rgba(40, 22, 14, 0.72);
-      --glass-border: rgba(245, 200, 66, 0.22);
-      --green: #4a9a5a;
-      --blue: #4a7aaa;
-      --orange: #e8943a;
-      --miss: #2d1a12;
-      --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-      --radius: 16px;
-      --font-display: "Segoe UI", system-ui, sans-serif;
+      --wood-deep: #1a0e08;
+      --wood: #2a1a10;
+      --wood-mid: #3d2818;
+      --wood-light: #5a3a24;
+      --gold: #e8c547;
+      --gold-bright: #ffe08a;
+      --fire: #ff6b2c;
+      --fire-soft: #ff9a4a;
+      --cream: #f3e6d0;
+      --mead: #c9a24a;
+      --green: #2e7d4f;
+      --red: #b8322a;
+      --glass: rgba(26, 14, 8, 0.78);
+      --border: rgba(232, 197, 71, 0.28);
+      --radius: 14px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       min-height: 100%;
-      background: var(--bg);
       color: var(--cream);
-      font-family: var(--font-display);
+      font-family: "Segoe UI", system-ui, sans-serif;
       -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
     }
 
     body {
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245, 200, 66, 0.12), transparent 55%),
-        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(217, 74, 58, 0.1), transparent 50%),
-        radial-gradient(ellipse 50% 35% at 10% 80%, rgba(74, 154, 90, 0.08), transparent 45%),
-        linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 40%, #241410 100%);
-      padding: 16px 12px 40px;
+        radial-gradient(ellipse 120% 55% at 50% 108%, rgba(255, 107, 44, 0.38) 0%, rgba(255, 154, 74, 0.14) 28%, transparent 58%),
+        radial-gradient(ellipse 70% 40% at 15% 90%, rgba(255, 140, 40, 0.12), transparent 50%),
+        radial-gradient(ellipse 70% 40% at 85% 90%, rgba(255, 100, 30, 0.1), transparent 50%),
+        linear-gradient(180deg, #0e0805 0%, var(--wood-deep) 35%, var(--wood) 70%, #24160e 100%);
+      padding: 0 12px 36px;
+      position: relative;
     }
 
-    .ambient {
+    /* Wooden plank texture overlay */
+    body::before {
+      content: "";
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 0;
-      background-image:
+      opacity: 0.18;
+      background:
         repeating-linear-gradient(
           90deg,
-          transparent,
-          transparent 48px,
-          rgba(255, 255, 255, 0.012) 48px,
-          rgba(255, 255, 255, 0.012) 49px
+          transparent 0px,
+          transparent 46px,
+          rgba(0, 0, 0, 0.35) 46px,
+          rgba(0, 0, 0, 0.35) 48px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 200, 120, 0.03) 0px,
+          transparent 2px,
+          transparent 28px,
+          rgba(0, 0, 0, 0.08) 29px
         );
-      opacity: 0.6;
+    }
+
+    /* Longhouse roof silhouette */
+    .longhouse {
+      position: relative;
+      z-index: 1;
+      height: 52px;
+      margin: 0 -12px 8px;
+      background:
+        linear-gradient(180deg, transparent 40%, rgba(20, 10, 5, 0.85) 40%),
+        radial-gradient(ellipse 100% 100% at 50% 100%, #1a1008 0%, transparent 70%);
+      clip-path: polygon(0 100%, 0 55%, 8% 35%, 50% 0, 92% 35%, 100% 55%, 100% 100%);
+      border-bottom: 2px solid rgba(232, 197, 71, 0.2);
+    }
+
+    .longhouse::after {
+      content: "ᚦ ᛟ ᚱ";
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: 0.6em;
+      font-size: 0.7rem;
+      color: rgba(232, 197, 71, 0.45);
     }
 
     .wrap {
       position: relative;
       z-index: 1;
-      max-width: 560px;
+      max-width: 540px;
       margin: 0 auto;
     }
 
     header.brand {
       text-align: center;
-      margin-bottom: 14px;
-      animation: brandIn 0.7s ease-out both;
+      margin-bottom: 12px;
+      padding: 4px 8px 10px;
+      border-top: 1px solid rgba(232, 197, 71, 0.25);
+      border-bottom: 1px solid rgba(232, 197, 71, 0.25);
+      background: linear-gradient(90deg, transparent, rgba(232, 197, 71, 0.06), transparent);
     }
 
     .brand-eyebrow {
-      font-size: 0.7rem;
-      letter-spacing: 0.28em;
+      font-size: 0.68rem;
+      letter-spacing: 0.35em;
       text-transform: uppercase;
-      color: var(--gold-dim);
-      margin-bottom: 4px;
+      color: var(--mead);
+      margin-bottom: 2px;
     }
 
     .brand h1 {
-      font-size: clamp(1.85rem, 6vw, 2.4rem);
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      background: linear-gradient(135deg, #fff6d6 0%, var(--gold) 45%, #e8943a 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: none;
-      filter: drop-shadow(0 2px 8px rgba(245, 200, 66, 0.25));
+      font-size: clamp(1.55rem, 6.2vw, 2.15rem);
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold-bright);
+      text-shadow:
+        0 0 18px rgba(255, 140, 40, 0.35),
+        0 2px 0 #8a6010,
+        0 4px 12px rgba(0, 0, 0, 0.6);
     }
 
     .brand p {
       margin-top: 4px;
-      font-size: 0.85rem;
-      color: rgba(242, 230, 212, 0.65);
-    }
-
-    @keyframes brandIn {
-      from { opacity: 0; transform: translateY(-12px); }
-      to { opacity: 1; transform: translateY(0); }
+      font-size: 0.82rem;
+      color: rgba(243, 230, 208, 0.6);
+      letter-spacing: 0.04em;
     }
 
     .panel {
       background: var(--glass);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 220, 150, 0.06);
       padding: 12px 14px;
       margin-bottom: 12px;
+      position: relative;
     }
+
+    /* Runic corner accents */
+    .panel::before,
+    .panel::after {
+      content: "ᚱ";
+      position: absolute;
+      top: 6px;
+      font-size: 0.65rem;
+      color: rgba(232, 197, 71, 0.35);
+    }
+    .panel::before { left: 8px; }
+    .panel::after { right: 8px; content: "ᚦ"; }
 
     .top-row {
       display: flex;
@@ -124,52 +167,42 @@
       flex-wrap: wrap;
     }
 
-    .balance-block .label,
-    .venue-block .label {
-      font-size: 0.65rem;
-      letter-spacing: 0.16em;
+    .label {
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: rgba(242, 230, 212, 0.5);
+      color: rgba(243, 230, 208, 0.5);
     }
 
     .balance-value {
-      font-size: 1.45rem;
-      font-weight: 700;
+      font-size: 1.4rem;
+      font-weight: 800;
       color: var(--gold);
       font-variant-numeric: tabular-nums;
-      transition: transform 0.2s ease, color 0.2s ease;
+      transition: transform 0.2s ease;
     }
 
-    .balance-value.pulse {
-      transform: scale(1.08);
-      color: #fff6d6;
-    }
+    .balance-value.pulse { transform: scale(1.08); color: var(--gold-bright); }
 
     .venue-block { text-align: right; }
-
-    .venue-name {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--cream);
-    }
+    .venue-name { font-size: 0.95rem; font-weight: 700; color: var(--cream); }
 
     .season-wrap { margin-top: 10px; }
-
     .season-label {
       display: flex;
       justify-content: space-between;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(242, 230, 212, 0.55);
+      color: rgba(243, 230, 208, 0.5);
       margin-bottom: 5px;
     }
 
     .season-bar {
       height: 10px;
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(245, 200, 66, 0.15);
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(232, 197, 71, 0.18);
       overflow: hidden;
     }
 
@@ -177,75 +210,61 @@
       height: 100%;
       width: 0%;
       border-radius: 999px;
-      background: linear-gradient(90deg, var(--orange), var(--gold), #fff6d6);
-      box-shadow: 0 0 12px rgba(245, 200, 66, 0.45);
-      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      background: linear-gradient(90deg, var(--fire), var(--gold), var(--gold-bright));
+      box-shadow: 0 0 12px rgba(255, 107, 44, 0.45);
+      transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .bonus-pill {
-      display: none;
+    .odin-banner {
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin: 0 auto 12px;
-      padding: 8px 18px;
+      margin-bottom: 10px;
+      padding: 8px 14px;
       border-radius: 999px;
-      background: linear-gradient(135deg, rgba(245, 200, 66, 0.95), rgba(232, 148, 58, 0.9));
-      color: #1a0e0a;
-      font-weight: 800;
-      font-size: 0.8rem;
-      letter-spacing: 0.12em;
-      box-shadow: 0 0 24px rgba(245, 200, 66, 0.55), 0 4px 16px rgba(0, 0, 0, 0.3);
-      animation: bonusPulse 1.2s ease-in-out infinite;
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.2), rgba(255, 107, 44, 0.12));
+      border: 1px solid rgba(232, 197, 71, 0.4);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      animation: odinPulse 2s ease-in-out infinite;
     }
 
-    .bonus-pill.active { display: inline-flex; }
-
-    .bonus-pill .throws {
-      background: rgba(26, 14, 10, 0.2);
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 0.75rem;
+    .odin-banner strong {
+      color: #fff;
+      text-shadow: 0 0 10px rgba(232, 197, 71, 0.8);
     }
 
-    @keyframes bonusPulse {
-      0%, 100% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.04); filter: brightness(1.08); }
+    @keyframes odinPulse {
+      0%, 100% { box-shadow: 0 0 8px rgba(232, 197, 71, 0.2); }
+      50% { box-shadow: 0 0 20px rgba(232, 197, 71, 0.45); }
     }
 
     .board-stage {
       position: relative;
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       margin: 0 auto 14px;
       aspect-ratio: 1 / 1;
-      border-radius: 20px;
+      border-radius: 50%;
       overflow: hidden;
-      border: 2px solid rgba(245, 200, 66, 0.28);
+      border: 6px solid #3a2618;
       box-shadow:
-        0 0 0 4px rgba(61, 36, 24, 0.8),
-        0 20px 50px rgba(0, 0, 0, 0.5),
-        inset 0 0 60px rgba(0, 0, 0, 0.35);
-      background: radial-gradient(circle at 50% 40%, #3a2218, #1a0e0a 70%);
-      animation: stageIn 0.8s ease-out both;
-    }
-
-    @keyframes stageIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
+        0 0 0 3px rgba(232, 197, 71, 0.25),
+        0 0 0 10px #1a1008,
+        0 18px 50px rgba(0, 0, 0, 0.55),
+        inset 0 0 40px rgba(0, 0, 0, 0.35);
+      background: #1a1008;
     }
 
     #dartboard {
       display: block;
       width: 100%;
       height: 100%;
-      cursor: crosshair;
       touch-action: none;
-    }
-
-    #dartboard.disabled,
-    #dartboard.auto-mode {
-      cursor: not-allowed;
     }
 
     .result-overlay {
@@ -256,10 +275,10 @@
       justify-content: center;
       pointer-events: none;
       opacity: 0;
-      transform: scale(0.7);
+      transform: scale(0.75);
       transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       z-index: 5;
-      background: radial-gradient(circle, rgba(26, 14, 10, 0.55) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(10, 6, 4, 0.65) 0%, transparent 70%);
     }
 
     .result-overlay.show {
@@ -269,50 +288,62 @@
 
     .result-card {
       text-align: center;
-      padding: 18px 28px;
-      border-radius: 18px;
-      background: rgba(26, 14, 10, 0.88);
-      border: 1px solid rgba(245, 200, 66, 0.45);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(245, 200, 66, 0.2);
-      min-width: 160px;
+      padding: 16px 26px;
+      border-radius: 16px;
+      background: rgba(20, 10, 5, 0.92);
+      border: 1px solid rgba(232, 197, 71, 0.5);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 28px rgba(255, 107, 44, 0.2);
+      min-width: 170px;
+    }
+
+    .result-score {
+      font-size: 1.55rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: var(--gold-bright);
+      text-shadow: 0 0 16px rgba(232, 197, 71, 0.5);
+    }
+
+    .result-score.odin { color: #fff; animation: flash 0.4s ease; }
+    .result-score.miss { color: #9a8a7a; text-shadow: none; }
+
+    @keyframes flash {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
     }
 
     .result-mult {
-      font-size: 2.4rem;
-      font-weight: 900;
-      line-height: 1;
-      color: var(--gold);
-      text-shadow: 0 0 20px rgba(245, 200, 66, 0.5);
-    }
-
-    .result-mult.miss { color: #9a8a7a; text-shadow: none; }
-    .result-mult.bonus { color: #fff6d6; animation: multFlash 0.4s ease; }
-
-    @keyframes multFlash {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
+      margin-top: 4px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--fire-soft);
     }
 
     .result-win {
-      margin-top: 4px;
-      font-size: 1.15rem;
+      margin-top: 2px;
+      font-size: 1rem;
       font-weight: 700;
-      color: var(--green);
+      color: #6dca8a;
     }
 
     .result-win.loss { color: #9a8a7a; }
 
-    .result-zone {
+    .result-tag {
       margin-top: 6px;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(242, 230, 212, 0.7);
+      color: rgba(243, 230, 208, 0.55);
     }
 
-    .controls {
-      display: grid;
-      gap: 12px;
+    .controls { display: grid; gap: 12px; }
+
+    .bet-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(243, 230, 208, 0.5);
+      margin-bottom: 6px;
     }
 
     .bet-row {
@@ -320,14 +351,6 @@
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
-    }
-
-    .bet-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(242, 230, 212, 0.55);
-      width: 100%;
     }
 
     .bet-input-wrap {
@@ -341,34 +364,30 @@
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--gold-dim);
-      font-weight: 600;
+      color: var(--mead);
+      font-weight: 700;
       pointer-events: none;
     }
 
     #betInput {
       width: 100%;
       padding: 11px 12px 11px 26px;
-      border-radius: 12px;
-      border: 1px solid rgba(245, 200, 66, 0.25);
-      background: rgba(0, 0, 0, 0.35);
+      border-radius: 11px;
+      border: 1px solid rgba(232, 197, 71, 0.28);
+      background: rgba(0, 0, 0, 0.4);
       color: var(--cream);
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       font-variant-numeric: tabular-nums;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     #betInput:focus {
       border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15);
+      box-shadow: 0 0 0 3px rgba(232, 197, 71, 0.15);
     }
 
-    .quick-bets {
-      display: flex;
-      gap: 6px;
-    }
+    .quick-bets { display: flex; gap: 6px; }
 
     button {
       font-family: inherit;
@@ -384,57 +403,60 @@
     .btn-quick {
       padding: 10px 14px;
       border-radius: 10px;
-      background: rgba(92, 58, 40, 0.7);
-      border: 1px solid rgba(245, 200, 66, 0.2);
+      background: rgba(90, 58, 36, 0.75);
+      border: 1px solid rgba(232, 197, 71, 0.22);
       color: var(--cream);
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.85rem;
     }
 
     .btn-quick:hover:not(:disabled) {
-      background: rgba(245, 200, 66, 0.2);
+      background: rgba(232, 197, 71, 0.22);
       border-color: var(--gold);
     }
 
-    .mode-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-mode {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(245, 200, 66, 0.18);
-      color: rgba(242, 230, 212, 0.7);
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
+    .btn-throw {
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ff8a3a 0%, #d94a1a 55%, #a83210 100%);
+      border: 2px solid rgba(255, 220, 150, 0.35);
+      color: #fff8e8;
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+      box-shadow:
+        0 6px 0 #6a1e08,
+        0 12px 28px rgba(255, 80, 20, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
-    .btn-mode.active {
-      background: linear-gradient(135deg, rgba(245, 200, 66, 0.35), rgba(232, 148, 58, 0.25));
-      border-color: var(--gold);
-      color: var(--gold);
-      box-shadow: 0 0 16px rgba(245, 200, 66, 0.2);
+    .btn-throw:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+
+    .btn-throw:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow:
+        0 3px 0 #6a1e08,
+        0 6px 16px rgba(255, 80, 20, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .hint {
       text-align: center;
-      font-size: 0.75rem;
-      color: rgba(242, 230, 212, 0.45);
-      margin-top: 2px;
+      font-size: 0.72rem;
+      color: rgba(243, 230, 208, 0.4);
+      margin-top: -4px;
     }
 
-    .history-wrap { margin-top: 4px; }
-
     .history-label {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(242, 230, 212, 0.5);
+      color: rgba(243, 230, 208, 0.5);
       margin-bottom: 8px;
     }
 
@@ -446,30 +468,30 @@
     }
 
     .chip {
-      min-width: 48px;
-      padding: 6px 10px;
+      min-width: 46px;
+      padding: 6px 9px;
       border-radius: 999px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 800;
       text-align: center;
       animation: chipIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .chip.high {
-      background: linear-gradient(135deg, #f5c842, #e8943a);
-      color: #1a0e0a;
-      box-shadow: 0 0 12px rgba(245, 200, 66, 0.35);
+      background: linear-gradient(135deg, #e8c547, #ff8a3a);
+      color: #1a0e08;
+      box-shadow: 0 0 10px rgba(232, 197, 71, 0.35);
     }
 
     .chip.mid {
-      background: rgba(74, 154, 90, 0.35);
-      border: 1px solid rgba(74, 154, 90, 0.6);
-      color: #8fd99c;
+      background: rgba(46, 125, 79, 0.4);
+      border: 1px solid rgba(109, 202, 138, 0.5);
+      color: #8fd9a8;
     }
 
     .chip.low {
       background: rgba(120, 110, 100, 0.25);
-      border: 1px solid rgba(150, 140, 130, 0.35);
+      border: 1px solid rgba(150, 140, 130, 0.3);
       color: #b0a89e;
     }
 
@@ -478,45 +500,32 @@
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-      justify-content: center;
-      margin-top: 10px;
-      font-size: 0.68rem;
-      color: rgba(242, 230, 212, 0.5);
-    }
-
-    .legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
+    .rtp-note {
+      text-align: center;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: rgba(243, 230, 208, 0.35);
+      margin-top: 8px;
     }
 
     .toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 22px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: rgba(26, 14, 10, 0.95);
+      background: rgba(20, 10, 5, 0.95);
       border: 1px solid var(--gold);
       color: var(--gold);
       padding: 10px 18px;
       border-radius: 12px;
       font-size: 0.85rem;
-      font-weight: 600;
+      font-weight: 700;
       opacity: 0;
       pointer-events: none;
       z-index: 100;
       transition: opacity 0.3s, transform 0.3s;
-      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
     }
 
     .toast.show {
@@ -525,32 +534,31 @@
     }
 
     @media (max-width: 420px) {
-      body { padding: 10px 8px 32px; }
+      body { padding: 0 8px 28px; }
       .panel { padding: 10px 12px; }
-      .balance-value { font-size: 1.25rem; }
-      .result-mult { font-size: 2rem; }
-      .btn-quick { padding: 10px 11px; font-size: 0.8rem; }
+      .btn-throw { letter-spacing: 0.18em; padding: 14px; }
+      .brand h1 { letter-spacing: 0.12em; }
     }
   </style>
 </head>
 <body>
-  <div class="ambient" aria-hidden="true"></div>
+  <div class="longhouse" aria-hidden="true"></div>
   <div class="wrap">
     <header class="brand">
-      <div class="brand-eyebrow">Boyz Casino</div>
-      <h1>BAR DARTS</h1>
-      <p>Aim true. Hit gold. Chase the frenzy.</p>
+      <div class="brand-eyebrow">Boyz Casino · Viking Tavern</div>
+      <h1>The Drunken Duck</h1>
+      <p>Throw true for Odin — chance rules the board</p>
     </header>
 
     <div class="panel">
       <div class="top-row">
-        <div class="balance-block">
+        <div>
           <div class="label">Balance</div>
           <div class="balance-value" id="balanceDisplay">$1,000.00</div>
         </div>
         <div class="venue-block">
-          <div class="label">Venue</div>
-          <div class="venue-name" id="venueName">The Rusty Bull</div>
+          <div class="label">Tavern</div>
+          <div class="venue-name" id="venueName">Valhalla Hall</div>
         </div>
       </div>
       <div class="season-wrap">
@@ -564,18 +572,18 @@
       </div>
     </div>
 
-    <div class="bonus-pill" id="bonusPill">
-      ✨ BULLSEYE BONUS
-      <span class="throws" id="bonusThrows">3 left</span>
+    <div class="odin-banner" id="odinBanner">
+      ✦ Odin's Eye · <strong id="odinLabel">20</strong>
     </div>
 
     <div class="board-stage">
       <canvas id="dartboard" width="520" height="520" aria-label="Dartboard"></canvas>
       <div class="result-overlay" id="resultOverlay">
         <div class="result-card">
-          <div class="result-mult" id="resultMult">100×</div>
-          <div class="result-win" id="resultWin">+ $0.00</div>
-          <div class="result-zone" id="resultZone">Bullseye</div>
+          <div class="result-score" id="resultScore">TRIPLE 20</div>
+          <div class="result-mult" id="resultMult">5.88×</div>
+          <div class="result-win" id="resultWin">+ $58.80</div>
+          <div class="result-tag" id="resultTag">Score 60</div>
         </div>
       </div>
     </div>
@@ -595,24 +603,14 @@
         </div>
       </div>
 
-      <div>
-        <div class="bet-label">Shooting mode</div>
-        <div class="mode-row">
-          <button type="button" class="btn-mode active" id="btnManual">Manual</button>
-          <button type="button" class="btn-mode" id="btnAuto">Auto</button>
-        </div>
-        <p class="hint" id="modeHint">Tap the board to throw</p>
-      </div>
+      <button type="button" class="btn-throw" id="btnThrow">Throw</button>
+      <p class="hint">Press Spacebar or tap THROW · RTP 98%</p>
     </div>
 
-    <div class="panel history-wrap">
+    <div class="panel">
       <div class="history-label">Last throws</div>
       <div class="history" id="history"></div>
-      <div class="legend">
-        <span><i class="dot" style="background:#f5c842"></i> High (50×+)</span>
-        <span><i class="dot" style="background:#4a9a5a"></i> Mid (12–25×)</span>
-        <span><i class="dot" style="background:#888"></i> Low / Miss</span>
-      </div>
+      <p class="rtp-note">Multiplier = Score × 0.098 · Odin's Eye doubles the payout</p>
     </div>
   </div>
 
@@ -622,10 +620,11 @@
     (function () {
       "use strict";
 
+      // roundRect polyfill
       if (!CanvasRenderingContext2D.prototype.roundRect) {
         CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-          const radii = typeof r === "number" ? [r, r, r, r] : r;
-          const [tl, tr, br, bl] = radii;
+          const rr = typeof r === "number" ? [r, r, r, r] : r;
+          const [tl, tr, br, bl] = rr;
           this.beginPath();
           this.moveTo(x + tl, y);
           this.lineTo(x + w - tr, y);
@@ -641,31 +640,36 @@
         };
       }
 
-      const ZONES = [
-        { name: "Bullseye", mult: 100, radius: 28, color: "#f5c842", progress: 2.0 },
-        { name: "Inner Ring", mult: 50, radius: 60, color: "#d94a3a", progress: 1.5 },
-        { name: "Mid Ring", mult: 25, radius: 100, color: "#e8943a", progress: 1.2 },
-        { name: "Outer Ring", mult: 12, radius: 140, color: "#4a9a5a", progress: 1.0 },
-        { name: "Edge Ring", mult: 6, radius: 178, color: "#4a7aaa", progress: 0.8 },
-        { name: "Miss", mult: 0, radius: 210, color: "#2d1a12", progress: 0.2 }
-      ];
+      // Classic dartboard number order (clockwise from top = 20)
+      const BOARD_ORDER = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
+
+      // Radii as fractions of board radius (inside double wire)
+      const R = {
+        doubleOuter: 1.0,
+        doubleInner: 0.93,
+        tripleOuter: 0.62,
+        tripleInner: 0.55,
+        outerBull: 0.12,
+        innerBull: 0.055
+      };
 
       const VENUES = [
-        "The Rusty Bull",
-        "The Golden Arrow",
-        "The Bullseye Pub",
-        "Dart & Dram",
-        "The Feathered Flight",
-        "Copper Cork Tavern",
-        "The Triple Twenty",
-        "Oak & Oche"
+        "Valhalla Hall",
+        "Odin's Table",
+        "The Mead Horn",
+        "Raven's Rest",
+        "Thor's Barrel",
+        "The Longship Inn",
+        "Fenrir's Den",
+        "The Drunken Duck"
       ];
 
       const MIN_BET = 0.01;
       const MAX_BET = 100;
-      const AUTO_INTERVAL = 1500;
-      const FLIGHT_MS = 720;
-      const OVERLAY_MS = 1800;
+      const RTP_FACTOR = 0.098; // avg score ~10 → 98% RTP
+      const SEASON_STEP = 1;
+      const FLIGHT_MS = 780;
+      const OVERLAY_MS = 1900;
 
       const canvas = document.getElementById("dartboard");
       const ctx = canvas.getContext("2d");
@@ -673,16 +677,14 @@
       const venueName = document.getElementById("venueName");
       const seasonFill = document.getElementById("seasonFill");
       const seasonPct = document.getElementById("seasonPct");
-      const bonusPill = document.getElementById("bonusPill");
-      const bonusThrowsEl = document.getElementById("bonusThrows");
+      const odinLabel = document.getElementById("odinLabel");
       const resultOverlay = document.getElementById("resultOverlay");
+      const resultScore = document.getElementById("resultScore");
       const resultMult = document.getElementById("resultMult");
       const resultWin = document.getElementById("resultWin");
-      const resultZone = document.getElementById("resultZone");
+      const resultTag = document.getElementById("resultTag");
       const betInput = document.getElementById("betInput");
-      const btnManual = document.getElementById("btnManual");
-      const btnAuto = document.getElementById("btnAuto");
-      const modeHint = document.getElementById("modeHint");
+      const btnThrow = document.getElementById("btnThrow");
       const historyEl = document.getElementById("history");
       const toastEl = document.getElementById("toast");
 
@@ -691,18 +693,23 @@
         bet: 1,
         progress: 0,
         venueIndex: 0,
-        goldenZone: 0,
-        mode: "manual",
-        isBonusActive: false,
-        bonusThrows: 0,
+        // odinTarget: number 1-20, or 0 for bullseye
+        odinTarget: 20,
         history: [],
         isFlying: false,
-        autoTimer: null,
         glowPhase: 0,
         particles: [],
         dart: null,
         overlayTimer: null
       };
+
+      // Board geometry in canvas pixels
+      function boardGeom() {
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const boardR = canvas.width * 0.42; // double outer radius
+        return { cx, cy, boardR };
+      }
 
       function formatMoney(n) {
         return "$" + n.toLocaleString("en-US", {
@@ -724,23 +731,25 @@
         showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2200);
       }
 
+      function pickOdinsEye() {
+        // ~10% chance bullseye, else a random segment 1-20
+        if (Math.random() < 0.1) {
+          state.odinTarget = 0;
+          odinLabel.textContent = "BULL";
+        } else {
+          state.odinTarget = BOARD_ORDER[Math.floor(Math.random() * 20)];
+          odinLabel.textContent = String(state.odinTarget);
+        }
+      }
+
       function updateUI() {
         balanceDisplay.textContent = formatMoney(state.balance);
         venueName.textContent = VENUES[state.venueIndex];
         const pct = Math.min(100, state.progress);
         seasonFill.style.width = pct + "%";
-        seasonPct.textContent = pct.toFixed(1) + "%";
-
-        if (state.isBonusActive) {
-          bonusPill.classList.add("active");
-          bonusThrowsEl.textContent = state.bonusThrows + " left";
-        } else {
-          bonusPill.classList.remove("active");
-        }
-
+        seasonPct.textContent = pct.toFixed(0) + "%";
         betInput.value = state.bet.toFixed(2);
-        canvas.classList.toggle("auto-mode", state.mode === "auto");
-        canvas.classList.toggle("disabled", state.isFlying);
+        btnThrow.disabled = state.isFlying || state.balance < state.bet - 1e-9;
       }
 
       function pulseBalance() {
@@ -748,135 +757,216 @@
         setTimeout(() => balanceDisplay.classList.remove("pulse"), 220);
       }
 
-      function pickGoldenZone() {
-        state.goldenZone = Math.floor(Math.random() * 5);
+      /**
+       * Convert canvas point to polar relative to board center.
+       * Angle 0 = top (20), clockwise positive (matches board drawing).
+       */
+      function toPolar(x, y) {
+        const { cx, cy, boardR } = boardGeom();
+        const dx = x - cx;
+        const dy = y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        // atan2(dx, -dy): 0 at top, clockwise
+        let angle = Math.atan2(dx, -dy);
+        if (angle < 0) angle += Math.PI * 2;
+        return { dist, angle, norm: dist / boardR, cx, cy, boardR };
       }
 
-      function getZoneIndex(dist) {
-        for (let i = 0; i < ZONES.length; i++) {
-          if (dist <= ZONES[i].radius) return i;
+      /** Resolve which segment number from angle (20 segments of 18°). */
+      function numberFromAngle(angle) {
+        const seg = Math.PI / 10; // 18°
+        // Segment centers are at 0, 18°, ... — boundaries at ±9°
+        let idx = Math.floor((angle + seg / 2) / seg) % 20;
+        return BOARD_ORDER[idx];
+      }
+
+      /**
+       * Hit detection for a point on the board.
+       * Returns { score, label, short, number, ring, isBull }
+       */
+      function resolveHit(x, y) {
+        const p = toPolar(x, y);
+        const n = p.norm;
+
+        // Outside double ring = miss (score 0) — shouldn't happen if we sample inside
+        if (n > R.doubleOuter) {
+          return { score: 0, label: "MISS", short: "MISS", number: 0, ring: "miss", isBull: false };
         }
-        return ZONES.length - 1;
+
+        if (n <= R.innerBull) {
+          return { score: 50, label: "INNER BULL", short: "BULL", number: 0, ring: "innerBull", isBull: true };
+        }
+        if (n <= R.outerBull) {
+          return { score: 25, label: "OUTER BULL", short: "25", number: 0, ring: "outerBull", isBull: true };
+        }
+
+        const num = numberFromAngle(p.angle);
+        let ring = "single";
+        let score = num;
+        let label = "SINGLE " + num;
+        let short = "S" + num;
+
+        if (n >= R.tripleInner && n <= R.tripleOuter) {
+          ring = "triple";
+          score = num * 3;
+          label = "TRIPLE " + num;
+          short = "T" + num;
+        } else if (n >= R.doubleInner && n <= R.doubleOuter) {
+          ring = "double";
+          score = num * 2;
+          label = "DOUBLE " + num;
+          short = "D" + num;
+        }
+
+        return { score, label, short, number: num, ring, isBull: false };
       }
 
-      function canvasPoint(clientX, clientY) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
+      /** Uniform random point inside the double-ring disk. */
+      function randomBoardPoint() {
+        const { cx, cy, boardR } = boardGeom();
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.sqrt(Math.random()) * boardR; // uniform area
+        // Convert from math angle to canvas: 0 at top clockwise uses different mapping for placement
+        // Use standard canvas coords: angle from +x, but we want uniform disk so any mapping works
         return {
-          x: (clientX - rect.left) * scaleX,
-          y: (clientY - rect.top) * scaleY
+          x: cx + Math.cos(angle) * r,
+          y: cy + Math.sin(angle) * r
         };
       }
 
-      function easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      function isOdinsEyeHit(hit) {
+        if (state.odinTarget === 0) {
+          return hit.isBull;
+        }
+        return hit.number === state.odinTarget;
+      }
+
+      // ——— Drawing ———
+
+      function drawSegment(cx, cy, rInner, rOuter, a0, a1, color) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOuter, a0, a1);
+        ctx.arc(cx, cy, rInner, a1, a0, true);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
       }
 
       function drawBoard() {
+        const { cx, cy, boardR } = boardGeom();
         const w = canvas.width;
         const h = canvas.height;
-        const cx = w / 2;
-        const cy = h / 2;
 
         ctx.clearRect(0, 0, w, h);
 
-        const woodGrad = ctx.createRadialGradient(cx, cy, 40, cx, cy, 260);
-        woodGrad.addColorStop(0, "#4a2e20");
-        woodGrad.addColorStop(0.6, "#2a1810");
-        woodGrad.addColorStop(1, "#140a08");
-        ctx.fillStyle = woodGrad;
+        // Cork / wood surround
+        const surround = ctx.createRadialGradient(cx, cy, boardR * 0.9, cx, cy, boardR * 1.18);
+        surround.addColorStop(0, "#3a2a1c");
+        surround.addColorStop(0.7, "#2a1a10");
+        surround.addColorStop(1, "#140c08");
+        ctx.fillStyle = surround;
         ctx.fillRect(0, 0, w, h);
 
-        for (let i = ZONES.length - 1; i >= 0; i--) {
-          const zone = ZONES[i];
-          const prevR = i === 0 ? 0 : ZONES[i - 1].radius;
+        // Outer metal ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, boardR * 1.08, 0, Math.PI * 2);
+        ctx.fillStyle = "#8a8a8a";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx, cy, boardR * 1.02, 0, Math.PI * 2);
+        ctx.fillStyle = "#c0c0c0";
+        ctx.fill();
 
-          ctx.beginPath();
-          ctx.arc(cx, cy, zone.radius, 0, Math.PI * 2);
-          if (i > 0) {
-            ctx.arc(cx, cy, prevR, 0, Math.PI * 2, true);
-          }
-          ctx.fillStyle = zone.color;
-          ctx.fill();
+        // Number ring background
+        ctx.beginPath();
+        ctx.arc(cx, cy, boardR * 1.02, 0, Math.PI * 2);
+        ctx.arc(cx, cy, boardR, 0, Math.PI * 2, true);
+        ctx.fillStyle = "#1a120c";
+        ctx.fill();
 
-          if (i < ZONES.length - 1) {
-            ctx.beginPath();
-            ctx.arc(cx, cy, zone.radius, 0, Math.PI * 2);
-            ctx.strokeStyle = "rgba(0,0,0,0.35)";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-          }
+        const seg = Math.PI / 10;
+        // Segment i centered at angle i*seg from top; canvas arcs use 0 = +x (3 o'clock)
+        // Top (20) center = -π/2 in canvas coords
+        const topOffset = -Math.PI / 2;
+
+        for (let i = 0; i < 20; i++) {
+          const aCenter = topOffset + i * seg;
+          const a0 = aCenter - seg / 2;
+          const a1 = aCenter + seg / 2;
+          const dark = i % 2 === 0;
+          const singleColor = dark ? "#111111" : "#f5f0e6";
+          const multiColor = dark ? "#b8322a" : "#2e7d4f";
+
+          // Single (between double and triple, and inside triple to bull)
+          drawSegment(cx, cy, boardR * R.tripleOuter, boardR * R.doubleInner, a0, a1, singleColor);
+          drawSegment(cx, cy, boardR * R.outerBull, boardR * R.tripleInner, a0, a1, singleColor);
+
+          // Double ring
+          drawSegment(cx, cy, boardR * R.doubleInner, boardR * R.doubleOuter, a0, a1, multiColor);
+
+          // Triple ring
+          drawSegment(cx, cy, boardR * R.tripleInner, boardR * R.tripleOuter, a0, a1, multiColor);
         }
 
-        // Wire rings highlight
-        for (let i = 0; i < ZONES.length - 1; i++) {
+        // Wire lines between segments
+        ctx.strokeStyle = "rgba(200, 200, 200, 0.85)";
+        ctx.lineWidth = 1.2;
+        for (let i = 0; i < 20; i++) {
+          const a = topOffset + i * seg - seg / 2;
           ctx.beginPath();
-          ctx.arc(cx, cy, ZONES[i].radius, 0, Math.PI * 2);
-          ctx.strokeStyle = "rgba(255,255,255,0.12)";
-          ctx.lineWidth = 1.5;
+          ctx.moveTo(cx + Math.cos(a) * boardR * R.outerBull, cy + Math.sin(a) * boardR * R.outerBull);
+          ctx.lineTo(cx + Math.cos(a) * boardR, cy + Math.sin(a) * boardR);
           ctx.stroke();
         }
 
-        // Golden glow
-        const g = state.goldenZone;
-        const gOuter = ZONES[g].radius;
-        const gInner = g === 0 ? 0 : ZONES[g - 1].radius;
-        const pulse = 0.45 + 0.35 * Math.sin(state.glowPhase);
+        // Concentric wires
+        const rings = [R.doubleOuter, R.doubleInner, R.tripleOuter, R.tripleInner, R.outerBull, R.innerBull];
+        ctx.strokeStyle = "rgba(210, 210, 210, 0.9)";
+        ctx.lineWidth = 1.5;
+        rings.forEach((fr) => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, boardR * fr, 0, Math.PI * 2);
+          ctx.stroke();
+        });
 
-        ctx.save();
+        // Outer bull (green) & inner bull (red)
         ctx.beginPath();
-        ctx.arc(cx, cy, gOuter + 4, 0, Math.PI * 2);
-        if (gInner > 0) ctx.arc(cx, cy, Math.max(0, gInner - 2), 0, Math.PI * 2, true);
-        ctx.shadowColor = `rgba(245, 200, 66, ${0.55 + pulse * 0.4})`;
-        ctx.shadowBlur = 18 + pulse * 22;
-        ctx.fillStyle = `rgba(245, 200, 66, ${0.12 + pulse * 0.1})`;
+        ctx.arc(cx, cy, boardR * R.outerBull, 0, Math.PI * 2);
+        ctx.fillStyle = "#2e7d4f";
         ctx.fill();
-        ctx.restore();
-
         ctx.beginPath();
-        ctx.arc(cx, cy, gOuter, 0, Math.PI * 2);
-        if (gInner > 0) ctx.arc(cx, cy, gInner, 0, Math.PI * 2, true);
-        ctx.strokeStyle = `rgba(255, 230, 140, ${0.55 + pulse * 0.4})`;
-        ctx.lineWidth = 3.5;
-        ctx.stroke();
+        ctx.arc(cx, cy, boardR * R.innerBull, 0, Math.PI * 2);
+        ctx.fillStyle = "#b8322a";
+        ctx.fill();
 
-        // Multiplier labels
+        // Numbers around the rim
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        for (let i = 0; i < ZONES.length - 1; i++) {
-          const outer = ZONES[i].radius;
-          const inner = i === 0 ? 0 : ZONES[i - 1].radius;
-          const midR = (outer + inner) / 2;
-          const labelY = i === 0 ? cy : cy - midR;
-
-          ctx.font = i === 0 ? "bold 13px Segoe UI, sans-serif" : "bold 12px Segoe UI, sans-serif";
-          ctx.fillStyle = i === 0 ? "#1a0e0a" : "rgba(255,255,255,0.92)";
-          ctx.strokeStyle = i === 0 ? "transparent" : "rgba(0,0,0,0.45)";
-          ctx.lineWidth = 3;
-          const label = ZONES[i].mult + "×";
-          if (i !== 0) ctx.strokeText(label, cx, labelY);
-          ctx.fillText(label, cx, labelY);
-
-          if (i === state.goldenZone) {
-            ctx.font = "10px Segoe UI, sans-serif";
-            ctx.fillStyle = "#fff6d6";
-            ctx.fillText("★ GOLD", cx, labelY + (i === 0 ? 14 : 12));
-          }
+        ctx.font = "bold 16px Segoe UI, sans-serif";
+        for (let i = 0; i < 20; i++) {
+          const a = topOffset + i * seg;
+          const nr = boardR * 1.055;
+          const nx = cx + Math.cos(a) * nr;
+          const ny = cy + Math.sin(a) * nr;
+          ctx.fillStyle = "#e8c547";
+          ctx.fillText(String(BOARD_ORDER[i]), nx, ny);
         }
+
+        // Odin's Eye glow
+        drawOdinsEye(cx, cy, boardR, topOffset, seg);
 
         // Particles
         for (let i = state.particles.length - 1; i >= 0; i--) {
           const p = state.particles[i];
           p.x += p.vx;
           p.y += p.vy;
-          p.life -= 0.03;
-          p.vy += 0.08;
+          p.life -= 0.028;
+          p.vy += 0.06;
           if (p.life <= 0) {
             state.particles.splice(i, 1);
             continue;
           }
-          ctx.globalAlpha = p.life;
+          ctx.globalAlpha = Math.max(0, p.life);
           ctx.fillStyle = p.color;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
@@ -884,10 +974,68 @@
           ctx.globalAlpha = 1;
         }
 
-        // Flying dart
         if (state.dart) {
           drawDart(state.dart.x, state.dart.y, state.dart.angle);
         }
+      }
+
+      function drawOdinsEye(cx, cy, boardR, topOffset, seg) {
+        const pulse = 0.4 + 0.35 * Math.sin(state.glowPhase);
+        ctx.save();
+
+        if (state.odinTarget === 0) {
+          // Glow around bull
+          ctx.beginPath();
+          ctx.arc(cx, cy, boardR * R.outerBull + 4, 0, Math.PI * 2);
+          ctx.shadowColor = `rgba(232, 197, 71, ${0.6 + pulse * 0.4})`;
+          ctx.shadowBlur = 20 + pulse * 18;
+          ctx.strokeStyle = `rgba(255, 230, 140, ${0.7 + pulse * 0.3})`;
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          // Rune mark
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = `rgba(255, 240, 180, ${0.55 + pulse * 0.3})`;
+          ctx.font = "bold 14px Segoe UI, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("ᚬ", cx, cy);
+        } else {
+          const idx = BOARD_ORDER.indexOf(state.odinTarget);
+          const aCenter = topOffset + idx * seg;
+          const a0 = aCenter - seg / 2;
+          const a1 = aCenter + seg / 2;
+
+          ctx.beginPath();
+          ctx.arc(cx, cy, boardR * R.doubleOuter, a0, a1);
+          ctx.arc(cx, cy, boardR * R.outerBull, a1, a0, true);
+          ctx.closePath();
+          ctx.fillStyle = `rgba(232, 197, 71, ${0.12 + pulse * 0.1})`;
+          ctx.shadowColor = `rgba(232, 197, 71, ${0.55 + pulse * 0.4})`;
+          ctx.shadowBlur = 16 + pulse * 20;
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(cx, cy, boardR * R.doubleOuter, a0, a1);
+          ctx.arc(cx, cy, boardR * R.outerBull, a1, a0, true);
+          ctx.closePath();
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = `rgba(255, 230, 140, ${0.65 + pulse * 0.35})`;
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
+          // Rune in segment mid
+          const midR = boardR * 0.78;
+          ctx.fillStyle = `rgba(255, 240, 180, ${0.7 + pulse * 0.3})`;
+          ctx.font = "bold 18px Segoe UI, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.shadowColor = "rgba(232, 197, 71, 0.8)";
+          ctx.shadowBlur = 8;
+          ctx.fillText("ᚬ", cx + Math.cos(aCenter) * midR, cy + Math.sin(aCenter) * midR);
+        }
+
+        ctx.restore();
       }
 
       function drawDart(x, y, angle) {
@@ -895,82 +1043,80 @@
         ctx.translate(x, y);
         ctx.rotate(angle);
 
-        // Shaft
         ctx.fillStyle = "#c9a882";
-        ctx.fillRect(-3, -28, 6, 32);
+        ctx.fillRect(-2.5, -26, 5, 30);
 
-        // Flights
-        ctx.fillStyle = "#d94a3a";
+        ctx.fillStyle = "#2e7d4f";
         ctx.beginPath();
-        ctx.moveTo(-3, -28);
-        ctx.lineTo(-14, -40);
-        ctx.lineTo(-3, -34);
+        ctx.moveTo(-2.5, -26);
+        ctx.lineTo(-12, -38);
+        ctx.lineTo(-2.5, -32);
         ctx.closePath();
         ctx.fill();
+        ctx.fillStyle = "#b8322a";
         ctx.beginPath();
-        ctx.moveTo(3, -28);
-        ctx.lineTo(14, -40);
-        ctx.lineTo(3, -34);
+        ctx.moveTo(2.5, -26);
+        ctx.lineTo(12, -38);
+        ctx.lineTo(2.5, -32);
         ctx.closePath();
         ctx.fill();
 
-        // Tip
         ctx.fillStyle = "#e8e0d4";
         ctx.beginPath();
-        ctx.moveTo(-3, 4);
-        ctx.lineTo(3, 4);
-        ctx.lineTo(0, 16);
+        ctx.moveTo(-2.5, 4);
+        ctx.lineTo(2.5, 4);
+        ctx.lineTo(0, 15);
         ctx.closePath();
         ctx.fill();
 
-        // Barrel
-        ctx.fillStyle = "#f5c842";
+        ctx.fillStyle = "#e8c547";
         ctx.beginPath();
-        ctx.roundRect(-4, -6, 8, 12, 2);
+        ctx.roundRect(-3.5, -5, 7, 10, 2);
         ctx.fill();
 
         ctx.restore();
       }
 
-      function spawnImpact(x, y, color) {
-        for (let i = 0; i < 18; i++) {
-          const a = (Math.PI * 2 * i) / 18 + Math.random() * 0.3;
-          const sp = 1.5 + Math.random() * 3.5;
+      function spawnImpact(x, y, odin) {
+        const colors = odin
+          ? ["#e8c547", "#ffe08a", "#ff8a3a", "#fff"]
+          : ["#c0c0c0", "#e8c547", "#ff6b2c", "#f5f0e6"];
+        for (let i = 0; i < 20; i++) {
+          const a = (Math.PI * 2 * i) / 20 + Math.random() * 0.2;
+          const sp = 1.2 + Math.random() * 3.5;
           state.particles.push({
             x, y,
             vx: Math.cos(a) * sp,
             vy: Math.sin(a) * sp,
-            life: 0.7 + Math.random() * 0.4,
+            life: 0.65 + Math.random() * 0.4,
             size: 2 + Math.random() * 3,
-            color: Math.random() > 0.4 ? color : "#fff6d6"
+            color: colors[i % colors.length]
           });
         }
       }
 
-      function addHistory(mult) {
-        state.history.unshift(mult);
+      function addHistory(short, mult) {
+        state.history.unshift({ short, mult });
         if (state.history.length > 8) state.history.pop();
-        renderHistory();
-      }
-
-      function renderHistory() {
         historyEl.innerHTML = "";
-        state.history.forEach((m) => {
+        state.history.forEach((h) => {
           const chip = document.createElement("div");
           chip.className = "chip";
-          if (m >= 50) chip.classList.add("high");
-          else if (m >= 12) chip.classList.add("mid");
+          if (h.mult >= 2.5) chip.classList.add("high");
+          else if (h.mult >= 0.8) chip.classList.add("mid");
           else chip.classList.add("low");
-          chip.textContent = m + "×";
+          chip.textContent = h.short;
           historyEl.appendChild(chip);
         });
       }
 
-      function showResult(zone, win, bonusHit) {
-        resultMult.textContent = zone.mult + "×";
-        resultMult.className = "result-mult";
-        if (zone.mult === 0) resultMult.classList.add("miss");
-        if (bonusHit) resultMult.classList.add("bonus");
+      function showResult(hit, mult, win, odin) {
+        resultScore.textContent = hit.label;
+        resultScore.className = "result-score";
+        if (hit.score === 0) resultScore.classList.add("miss");
+        if (odin) resultScore.classList.add("odin");
+
+        resultMult.textContent = mult.toFixed(2) + "×";
 
         if (win > 0) {
           resultWin.textContent = "+ " + formatMoney(win);
@@ -980,9 +1126,9 @@
           resultWin.className = "result-win loss";
         }
 
-        let zoneLabel = zone.name;
-        if (bonusHit) zoneLabel += " · 2× BONUS";
-        resultZone.textContent = zoneLabel;
+        resultTag.textContent = odin
+          ? "Score " + hit.score + " · Odin's Eye 2×"
+          : "Score " + hit.score;
 
         resultOverlay.classList.add("show");
         clearTimeout(state.overlayTimer);
@@ -991,99 +1137,65 @@
         }, OVERLAY_MS);
       }
 
-      function advanceSeason(zone) {
-        let add = zone.progress;
-        state.progress += add;
+      function advanceSeason() {
+        state.progress += SEASON_STEP;
         if (state.progress >= 100) {
           state.progress = 0;
           state.venueIndex = (state.venueIndex + 1) % VENUES.length;
-          pickGoldenZone();
-          showToast("New venue: " + VENUES[state.venueIndex]);
+          pickOdinsEye();
+          showToast("New tavern: " + VENUES[state.venueIndex]);
         }
       }
 
-      function canAfford() {
-        return state.balance >= state.bet - 1e-9;
-      }
-
-      function shootAt(tx, ty) {
+      function throwDart() {
         if (state.isFlying) return;
-        if (!canAfford()) {
+        if (state.balance < state.bet - 1e-9) {
           showToast("Not enough balance");
-          stopAuto();
           return;
         }
 
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        const dx = tx - cx;
-        const dy = ty - cy;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const target = randomBoardPoint();
+        const hit = resolveHit(target.x, target.y);
+        const odin = isOdinsEyeHit(hit);
 
-        // Clamp to board edge for visual
-        const maxR = ZONES[ZONES.length - 1].radius;
-        let landX = tx;
-        let landY = ty;
-        if (dist > maxR) {
-          const s = maxR / dist;
-          landX = cx + dx * s;
-          landY = cy + dy * s;
-        }
-
-        const zoneIdx = getZoneIndex(Math.min(dist, maxR + 1));
-        const zone = ZONES[zoneIdx];
-        const isGolden = zoneIdx === state.goldenZone;
-
+        // Deduct bet immediately
         state.balance = Math.round((state.balance - state.bet) * 100) / 100;
         pulseBalance();
-        updateUI();
-
         state.isFlying = true;
         updateUI();
 
-        const startX = canvas.width / 2;
-        const startY = -20;
+        const { cx } = boardGeom();
+        const startX = cx;
+        const startY = canvas.height + 10;
         const startTime = performance.now();
-        const peakLift = -40 - Math.random() * 30;
+        const peakLift = -50 - Math.random() * 40;
 
         function frame(now) {
           const t = Math.min(1, (now - startTime) / FLIGHT_MS);
-          const e = easeInOutCubic(t);
-          const x = startX + (landX - startX) * e;
-          const y = startY + (landY - startY) * e + Math.sin(e * Math.PI) * peakLift;
-          const angle = Math.atan2(landY - startY, landX - startX) + Math.PI / 2;
+          const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          const x = startX + (target.x - startX) * e;
+          const y = startY + (target.y - startY) * e + Math.sin(e * Math.PI) * peakLift;
+          const angle = Math.atan2(target.y - startY, target.x - startX) + Math.PI / 2;
 
           state.dart = { x, y, angle };
           if (t < 1) {
             requestAnimationFrame(frame);
           } else {
-            state.dart = { x: landX, y: landY, angle };
-            spawnImpact(landX, landY, isGolden ? "#f5c842" : zone.color);
-            resolveShot(zone, zoneIdx, isGolden);
+            state.dart = { x: target.x, y: target.y, angle };
+            spawnImpact(target.x, target.y, odin);
+            resolveThrow(hit, odin);
           }
         }
         requestAnimationFrame(frame);
       }
 
-      function resolveShot(zone, zoneIdx, isGolden) {
-        let mult = zone.mult;
-        let bonusHit = false;
-
-        if (state.isBonusActive) {
-          state.bonusThrows -= 1;
-          if (isGolden && mult > 0) {
-            mult *= 2;
-            bonusHit = true;
-          }
-          if (state.bonusThrows <= 0) {
-            state.isBonusActive = false;
-            state.bonusThrows = 0;
-          }
-        } else if (isGolden && zone.mult > 0) {
-          state.isBonusActive = true;
-          state.bonusThrows = 3;
-          showToast("✨ Bullseye Frenzy activated!");
+      function resolveThrow(hit, odin) {
+        let mult = hit.score * RTP_FACTOR;
+        if (odin && hit.score > 0) {
+          mult *= 2;
+          showToast("✦ Odin's Eye! Payout doubled");
         }
+        mult = Math.round(mult * 10000) / 10000;
 
         const win = Math.round(state.bet * mult * 100) / 100;
         if (win > 0) {
@@ -1091,79 +1203,32 @@
           pulseBalance();
         }
 
-        addHistory(zone.mult);
-        advanceSeason(zone);
-        showResult(zone, win, bonusHit);
+        addHistory(hit.short, mult);
+        advanceSeason();
+        showResult(hit, mult, win, odin && hit.score > 0);
+
+        // Refresh Odin's Eye after a hit on it (or occasionally each throw for variety)
+        if (odin || Math.random() < 0.25) {
+          pickOdinsEye();
+        }
 
         setTimeout(() => {
           state.isFlying = false;
           state.dart = null;
           updateUI();
-          if (state.mode === "auto") scheduleAuto();
-        }, 280);
+        }, 300);
       }
 
-      function shootRandom() {
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        // Weighted toward mid-board for more interesting auto play
-        const angle = Math.random() * Math.PI * 2;
-        const r = Math.pow(Math.random(), 0.65) * 200;
-        shootAt(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
-      }
+      // ——— Events ———
 
-      function scheduleAuto() {
-        clearTimeout(state.autoTimer);
-        if (state.mode !== "auto" || state.isFlying) return;
-        if (!canAfford()) {
-          showToast("Auto stopped — low balance");
-          setMode("manual");
-          return;
+      btnThrow.addEventListener("click", throwDart);
+
+      window.addEventListener("keydown", (e) => {
+        if (e.code === "Space" || e.key === " ") {
+          e.preventDefault();
+          throwDart();
         }
-        state.autoTimer = setTimeout(() => {
-          if (state.mode === "auto" && !state.isFlying) shootRandom();
-        }, AUTO_INTERVAL);
-      }
-
-      function stopAuto() {
-        clearTimeout(state.autoTimer);
-        state.autoTimer = null;
-      }
-
-      function setMode(mode) {
-        state.mode = mode;
-        btnManual.classList.toggle("active", mode === "manual");
-        btnAuto.classList.toggle("active", mode === "auto");
-        modeHint.textContent = mode === "manual"
-          ? "Tap the board to throw"
-          : "Auto-throwing every 1.5s";
-        updateUI();
-        if (mode === "auto") {
-          scheduleAuto();
-        } else {
-          stopAuto();
-        }
-      }
-
-      function handlePointer(clientX, clientY) {
-        if (state.mode !== "manual" || state.isFlying) return;
-        const p = canvasPoint(clientX, clientY);
-        shootAt(p.x, p.y);
-      }
-
-      canvas.addEventListener("click", (e) => {
-        handlePointer(e.clientX, e.clientY);
       });
-
-      canvas.addEventListener("touchstart", (e) => {
-        if (e.touches.length === 0) return;
-        e.preventDefault();
-        const t = e.touches[0];
-        handlePointer(t.clientX, t.clientY);
-      }, { passive: false });
-
-      btnManual.addEventListener("click", () => setMode("manual"));
-      btnAuto.addEventListener("click", () => setMode("auto"));
 
       document.querySelectorAll("[data-bet]").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -1193,9 +1258,8 @@
         requestAnimationFrame(loop);
       }
 
-      pickGoldenZone();
+      pickOdinsEye();
       updateUI();
-      renderHistory();
       loop();
     })();
   </script>
