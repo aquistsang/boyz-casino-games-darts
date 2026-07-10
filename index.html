@@ -57,7 +57,7 @@
         repeating-linear-gradient(0deg, rgba(255,200,120,0.03) 0px, transparent 2px, transparent 28px, rgba(0,0,0,0.08) 29px);
     }
 
-    .longhouse {
+    .pub-roof {
       position: relative;
       z-index: 1;
       flex: 0 0 auto;
@@ -70,7 +70,7 @@
       border-bottom: 1px solid rgba(232, 197, 71, 0.2);
     }
 
-    .longhouse::after { display: none; }
+    .pub-roof::after { display: none; }
 
     .wrap {
       position: relative;
@@ -690,7 +690,7 @@
     }
 
     @media (max-height: 580px), (orientation: landscape) and (max-height: 500px) {
-      .longhouse { display: none; }
+      .pub-roof { display: none; }
       .history-label { display: none; }
       .board-stage { border-width: 3px; box-shadow: 0 0 0 2px rgba(232, 197, 71, 0.25), 0 0 0 4px #1a1008; }
     }
@@ -703,13 +703,13 @@
   </style>
 </head>
 <body>
-  <div class="longhouse" aria-hidden="true"></div>
+  <div class="pub-roof" aria-hidden="true"></div>
   <div class="wrap">
     <header class="brand">
       <button type="button" class="btn-help" id="btnHelp" aria-label="How to play">?</button>
-      <div class="brand-eyebrow">Boyz Casino · Viking Tavern</div>
+      <div class="brand-eyebrow">Boyz Casino · British Pub</div>
       <h1>Drunken Darts</h1>
-      <p>Chance rules the board — toast to the Bull's Eye</p>
+      <p>A pint, a dart, and a bit of luck</p>
     </header>
 
     <div class="panel">
@@ -719,8 +719,8 @@
           <div class="balance-value" id="balanceDisplay">$1,000.00</div>
         </div>
         <div class="venue-block">
-          <div class="label">Tavern</div>
-          <div class="venue-name" id="venueName">Valhalla Hall</div>
+          <div class="label">Pub</div>
+          <div class="venue-name" id="venueName">The Drunken Duck</div>
           <div class="player-toggle" role="group" aria-label="Player">
             <button type="button" class="active" data-player="1">Player 1</button>
             <button type="button" data-player="2">Player 2</button>
@@ -806,7 +806,7 @@
         </li>
         <li>
           <strong>Season</strong>
-          Each throw fills the Season bar. At 100%, a new tavern opens.
+          Each throw fills the Season bar. At 100%, a new pub opens.
         </li>
       </ul>
       <button type="button" class="btn-modal" id="btnCloseHelp">Got it — Throw!</button>
@@ -854,14 +854,14 @@
       const MISS_RADIUS_FACTOR = 1 / Math.sqrt(1 - MISS_RATE); // ≈ 1.00514
 
       const VENUES = [
-        "Valhalla Hall",
-        "Odin's Table",
-        "The Mead Horn",
-        "Raven's Rest",
-        "Thor's Barrel",
-        "The Longship Inn",
-        "Fenrir's Den",
-        "The Drunken Duck"
+        "The Drunken Duck",
+        "The Red Lion",
+        "The Crown & Anchor",
+        "The Queen's Arms",
+        "The Three Feathers",
+        "The Old Oak",
+        "The Bull & Gate",
+        "The White Hart"
       ];
 
       const MIN_BET = 0.01;
@@ -871,6 +871,18 @@
       const FLIGHT_MS = 920;
       const OVERLAY_MS = 1900;
       const HELP_KEY = "drunkenDartsHelpSeen";
+      const throwSfx = new Audio("dart-throw.mp3");
+      throwSfx.preload = "auto";
+      throwSfx.volume = 0.85;
+
+      function playThrowSound() {
+        try {
+          throwSfx.pause();
+          throwSfx.currentTime = 0;
+          const play = throwSfx.play();
+          if (play && typeof play.catch === "function") play.catch(() => {});
+        } catch (e) { /* ignore autoplay blocks */ }
+      }
 
       const canvas = document.getElementById("dartboard");
       const ctx = canvas.getContext("2d");
@@ -1173,7 +1185,13 @@
         }
 
         if (state.dart) {
-          drawDart(state.dart.x, state.dart.y, state.dart.progress, state.dart.embedded);
+          drawDart(
+            state.dart.x,
+            state.dart.y,
+            state.dart.progress,
+            state.dart.embedded,
+            state.dart.aimAngle
+          );
         }
       }
 
@@ -1194,7 +1212,7 @@
           ctx.font = "bold 14px Segoe UI, sans-serif";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
-          ctx.fillText("ᚬ", cx, cy);
+          ctx.fillText("★", cx, cy);
         } else {
           const idx = BOARD_ORDER.indexOf(state.bullTarget);
           const aCenter = topOffset + idx * seg;
@@ -1226,119 +1244,120 @@
           ctx.textBaseline = "middle";
           ctx.shadowColor = "rgba(232, 197, 71, 0.8)";
           ctx.shadowBlur = 8;
-          ctx.fillText("ᚬ", cx + Math.cos(aCenter) * midR, cy + Math.sin(aCenter) * midR);
+          ctx.fillText("★", cx + Math.cos(aCenter) * midR, cy + Math.sin(aCenter) * midR);
         }
 
         ctx.restore();
       }
 
       /**
-       * POV dart: tip into the board (away from camera), flights toward the player.
-       * progress 0 = near camera (large), 1 = at board (smaller / embedded).
+       * Classic dart at a slight 3/4 angle (readable as a dart, not rear-on star).
+       * Tip points toward the board; flights trail behind.
+       * aimAngle: direction tip points (radians, canvas coords).
        */
-      function drawDart(x, y, progress, embedded) {
+      function drawDart(x, y, progress, embedded, aimAngle) {
         const p = Math.max(0, Math.min(1, progress));
-        // Near player → large; at board → smaller; stuck → medium
-        const scale = embedded
-          ? 0.92
-          : 2.15 - p * 1.35;
-        const spin = p * Math.PI * 2.4;
-        const tipDepth = embedded ? 0.35 : 1; // tip sinks into board when stuck
+        const scale = embedded ? 0.95 : 1.55 - p * 0.55;
+        const angle = aimAngle != null ? aimAngle : -Math.PI / 2;
+        // Pitch: more side-on early, tip dips into board on impact
+        const pitch = embedded ? 0.55 : 0.72 - p * 0.12;
 
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(scale, scale);
+        ctx.rotate(angle);
+        ctx.scale(scale, scale * pitch);
 
-        // Soft contact shadow on the board
+        // Contact shadow
         ctx.beginPath();
-        ctx.ellipse(0, 2, 14 * (0.5 + p * 0.5), 5 * (0.4 + p * 0.6), 0, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,0,0,${0.12 + p * 0.28})`;
+        ctx.ellipse(2, 10, 10 + p * 4, 3.5, 0, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,0,0,${0.15 + p * 0.25})`;
         ctx.fill();
 
-        ctx.rotate(spin);
-
-        // Flights (closest to camera) — 4 vanes
-        const flightColors = ["#b8322a", "#2e7d4f", "#b8322a", "#2e7d4f"];
-        for (let i = 0; i < 4; i++) {
-          ctx.save();
-          ctx.rotate((i * Math.PI) / 2);
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(4, -6);
-          ctx.quadraticCurveTo(16, -22, 3, -28);
-          ctx.lineTo(0, -10);
-          ctx.closePath();
-          ctx.fillStyle = flightColors[i];
-          ctx.globalAlpha = 0.92;
-          ctx.fill();
-          ctx.strokeStyle = "rgba(0,0,0,0.25)";
-          ctx.lineWidth = 0.6;
-          ctx.stroke();
-          ctx.restore();
-        }
+        // Flights (rear) — classic twin vanes, not a star
+        ctx.fillStyle = "#b8322a";
+        ctx.beginPath();
+        ctx.moveTo(-3, -28);
+        ctx.lineTo(-14, -42);
+        ctx.lineTo(-3, -34);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#2e7d4f";
+        ctx.beginPath();
+        ctx.moveTo(3, -28);
+        ctx.lineTo(14, -42);
+        ctx.lineTo(3, -34);
+        ctx.closePath();
+        ctx.fill();
+        // Side flight hints for 3D
+        ctx.globalAlpha = 0.55;
+        ctx.fillStyle = "#8a2020";
+        ctx.beginPath();
+        ctx.moveTo(-2, -30);
+        ctx.lineTo(-8, -38);
+        ctx.lineTo(-2, -33);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#1e5a38";
+        ctx.beginPath();
+        ctx.moveTo(2, -30);
+        ctx.lineTo(8, -38);
+        ctx.lineTo(2, -33);
+        ctx.closePath();
+        ctx.fill();
         ctx.globalAlpha = 1;
 
-        // Shaft ring (foreshortened cylinder toward tip)
+        // Shaft
+        const shaftGrad = ctx.createLinearGradient(-3, 0, 3, 0);
+        shaftGrad.addColorStop(0, "#a88860");
+        shaftGrad.addColorStop(0.5, "#e0c9a0");
+        shaftGrad.addColorStop(1, "#a88860");
+        ctx.fillStyle = shaftGrad;
         ctx.beginPath();
-        ctx.arc(0, 0, 5.5, 0, Math.PI * 2);
-        ctx.fillStyle = "#c9a882";
+        ctx.roundRect(-2.5, -30, 5, 34, 1.5);
         ctx.fill();
-        ctx.strokeStyle = "rgba(0,0,0,0.3)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
 
-        // Barrel (gold)
-        ctx.beginPath();
-        ctx.arc(0, 0, 4.2, 0, Math.PI * 2);
-        const barrelGrad = ctx.createRadialGradient(-1, -1, 0.5, 0, 0, 4.2);
-        barrelGrad.addColorStop(0, "#ffe08a");
+        // Barrel (knurled gold)
+        const barrelGrad = ctx.createLinearGradient(-4, 0, 4, 0);
+        barrelGrad.addColorStop(0, "#a88820");
+        barrelGrad.addColorStop(0.45, "#ffe08a");
         barrelGrad.addColorStop(1, "#c9a24a");
         ctx.fillStyle = barrelGrad;
+        ctx.beginPath();
+        ctx.roundRect(-4, -4, 8, 14, 2);
         ctx.fill();
-
-        // Tip pointing into board (center = farthest)
-        if (tipDepth > 0.2) {
-          const tipR = 2.2 * tipDepth;
+        ctx.strokeStyle = "rgba(0,0,0,0.25)";
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        // Knurl lines
+        ctx.strokeStyle = "rgba(0,0,0,0.2)";
+        ctx.lineWidth = 0.6;
+        for (let i = 0; i < 4; i++) {
+          const yy = -2 + i * 3;
           ctx.beginPath();
-          ctx.arc(0, 0, tipR, 0, Math.PI * 2);
-          ctx.fillStyle = "#e8e0d4";
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(0, 0, tipR * 0.45, 0, Math.PI * 2);
-          ctx.fillStyle = "#8a8a8a";
-          ctx.fill();
-        } else {
-          // Fully embedded — just a dark puncture
-          ctx.beginPath();
-          ctx.arc(0, 0, 1.4, 0, Math.PI * 2);
-          ctx.fillStyle = "#1a1008";
-          ctx.fill();
+          ctx.moveTo(-3.2, yy);
+          ctx.lineTo(3.2, yy);
+          ctx.stroke();
         }
 
-        // Specular highlight
+        // Point / tip
+        const tipGrad = ctx.createLinearGradient(0, 10, 0, 28);
+        tipGrad.addColorStop(0, "#f0ebe0");
+        tipGrad.addColorStop(1, "#8a8a8a");
+        ctx.fillStyle = tipGrad;
         ctx.beginPath();
-        ctx.arc(-1.2, -1.2, 1.1, 0, Math.PI * 2);
+        ctx.moveTo(-2.8, 10);
+        ctx.lineTo(2.8, 10);
+        ctx.lineTo(0, embedded ? 22 : 28);
+        ctx.closePath();
+        ctx.fill();
+
+        // Specular
         ctx.fillStyle = "rgba(255,255,255,0.35)";
+        ctx.beginPath();
+        ctx.ellipse(-1.2, 2, 1.2, 3, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
-
-        // Motion streak while flying (toward landing)
-        if (!embedded && p > 0.05 && p < 0.95) {
-          ctx.save();
-          ctx.globalAlpha = 0.2 * (1 - p);
-          ctx.strokeStyle = "#ffe08a";
-          ctx.lineWidth = 2 * scale;
-          ctx.lineCap = "round";
-          const { cx, cy } = boardGeom();
-          const backX = x + (cx - x) * -0.08 - (x - cx) * 0.15 * (1 - p);
-          const backY = y + 40 * (1 - p);
-          ctx.beginPath();
-          ctx.moveTo(backX, backY);
-          ctx.lineTo(x, y);
-          ctx.stroke();
-          ctx.restore();
-        }
       }
 
       function spawnImpact(x, y, special) {
@@ -1420,7 +1439,7 @@
           state.progress = 0;
           state.venueIndex = (state.venueIndex + 1) % VENUES.length;
           pickBullsEye();
-          showToast("New tavern: " + VENUES[state.venueIndex]);
+          showToast("New pub: " + VENUES[state.venueIndex]);
         }
       }
 
@@ -1430,6 +1449,8 @@
           showToast("Not enough balance");
           return;
         }
+
+        playThrowSound();
 
         const target = randomThrowPoint();
         const hit = resolveHit(target.x, target.y);
@@ -1441,26 +1462,31 @@
         updateUI();
 
         const { cx } = boardGeom();
-        // POV start: bottom-center, slightly toward landing so it reads as thrown from player
-        const startX = cx + (target.x - cx) * 0.08;
+        // Start from bottom-center (player POV), tip aimed at landing spot
+        const startX = cx + (target.x - cx) * 0.06;
         const startY = canvas.height + 28;
         const startTime = performance.now();
 
         function frame(now) {
           const t = Math.min(1, (now - startTime) / FLIGHT_MS);
-          // Ease-out so it rushes into the board tip-first
           const e = 1 - Math.pow(1 - t, 2.6);
           const x = startX + (target.x - startX) * e;
-          // Slight arc so it doesn't look like a straight slide
-          const arc = Math.sin(e * Math.PI) * (-18);
+          const arc = Math.sin(e * Math.PI) * (-22);
           const y = startY + (target.y - startY) * e + arc;
+          // Tip points along flight path (slightly into the board)
+          const aimAngle = Math.atan2(target.y - startY, target.x - startX) + Math.PI / 2;
 
-          state.dart = { x, y, progress: e, embedded: false };
+          state.dart = { x, y, progress: e, embedded: false, aimAngle };
           if (t < 1) {
             requestAnimationFrame(frame);
           } else {
-            // Stick tip-first into the board
-            state.dart = { x: target.x, y: target.y, progress: 1, embedded: true };
+            state.dart = {
+              x: target.x,
+              y: target.y,
+              progress: 1,
+              embedded: true,
+              aimAngle: aimAngle + 0.18 // slight stuck angle
+            };
             spawnImpact(target.x, target.y, bullsEye || hit.isMiss);
             resolveThrow(hit, bullsEye);
           }
